@@ -1,0 +1,53 @@
+C:\Users\aman\Documents\func_approx\utils.py:174: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  scheduler.step(val_losses_list[i][0])
+Epoch 0
+C:\Users\aman\Documents\func_approx\utils.py:187: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  print ('Train loss',train_losses_list[i][0])
+C:\Users\aman\Documents\func_approx\utils.py:188: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  print ('Val loss', val_losses_list[i][0])
+Train loss tensor(0.1240)
+Val loss tensor(1.00000e-02 *
+       6.6900)
+No improvement epochs  0
+C:\Users\aman\Documents\func_approx\utils.py:177: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  if best_val_loss[0] ==0.0:
+C:\Users\aman\Documents\func_approx\utils.py:179: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  if ((best_val_loss[0] -val_losses_list[i][0])/best_val_loss[0]) > tolerance:
+C:\Users\aman\Documents\func_approx\utils.py:191: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  if  best_val_loss is None or val_losses_list[i][0] < best_val_loss[0]:
+Epoch 10
+Train loss tensor(1.00000e-03 *
+       2.8884)
+Val loss tensor(1.00000e-03 *
+       1.2731)
+No improvement epochs  0
+Epoch 20
+Train loss tensor(1.00000e-02 *
+       1.6206)
+Val loss tensor(1.00000e-03 *
+       6.8264)
+No improvement epochs  10
+Epoch 30
+Train loss tensor(1.00000e-03 *
+       4.4436)
+Val loss tensor(1.00000e-03 *
+       2.1854)
+No improvement epochs  1
+Epoch 40
+Train loss tensor(1.00000e-03 *
+       4.7940)
+Val loss tensor(1.00000e-03 *
+       1.0222)
+No improvement epochs  11
+Epoch 50
+Train loss tensor(1.00000e-02 *
+       2.6079)
+Val loss tensor(1.00000e-02 *
+       1.7388)
+No improvement epochs  21
+Epoch 60
+Train loss tensor(1.00000e-03 *
+       2.6154)
+Val loss tensor(1.00000e-04 *
+       9.1125)
+No improvement epochs  31
