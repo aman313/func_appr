@@ -9,15 +9,16 @@ from utils import sum_func
 from utils import get_filter_region_in_Rd
 from utils import create_sample_from_domain_with_filter_functions
 from utils import read_samples
-from approximator import Differential_function_approximator
+from approximator import SingleSampleFunctionApproximator
 from approximator import Rd_difference_approximator
 from utils import GPU
+from approximator import Rd_siamese_approximator
 from torch import nn 
 from torch import optim
 import random
 sample_file ='square.csv'
 ood_sample_file='square-ood.csv'
-NUM_EPOCHS=10000
+NUM_EPOCHS=20000
 
 def generate_data():
     SAMPLE_SIZE=10000
@@ -35,14 +36,20 @@ def approximate_function():
     train_data = samples[:int(0.6*len(samples))]
     val_data = samples[int(0.6*len(samples)):int(0.8*len(samples))]
     test_data = samples[int(0.8*len(samples)):]
-    differential_model = Rd_difference_approximator()
+    model = Rd_difference_approximator()
     if GPU:
         differential_model = differential_model.cuda()
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    approximator = Differential_function_approximator(train_data,differential_model=differential_model,domain=domain,model_file='square-diff.model')
-    optimizer = optim.Adam(differential_model.parameters(), lr=1e-2)
+    approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file='square-single.model')
+    optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 
-approximate_function()
+if __name__ =='__main__':
+    #approximate_function()
+    SAMPLE_SIZE=1000
+    sample_file ='square-5to10.csv'
+    R_2 ={'num_dims':2,'bounds':[(5,10),(5,10)]}
+    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    create_sample_from_domain_with_filter_functions(domain,[],sum_func,SAMPLE_SIZE,sample_file)

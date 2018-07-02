@@ -6,8 +6,8 @@ from torch import cuda
 from torch import optim
 import sys
 
-GPU = cuda.is_available()
-
+#GPU = cuda.is_available()
+GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
     samples = []
     while len(samples)< sample_size:
@@ -80,6 +80,19 @@ def sum_func(x):
 
 
 '''
+    Classification functions
+'''
+
+def region_to_class_function(region_to_class_map):
+    def class_func(x):
+        for region,cls in region_to_class_map.items():
+            if region.contains(x):
+                return cls
+        
+    return class_func
+
+
+'''
     Filter functions
 '''
 def get_filter_region_in_Rd(region):
@@ -106,13 +119,14 @@ def run_epoch(net,train_data_gen,criterion,opt):
             X,y = Variable(X.cuda()),Variable(y.cuda())
         else:
             X,y = Variable(X),Variable(y)
-
+        
         opt.zero_grad()
         #print(type(X))
         output = net((X))
         #print (output,y)
         loss = criterion(output.squeeze(1),y)
         loss.backward()
+        #print('X, y, loss ',X,y,loss)
         train_loss += loss
         num_batches+=1
         opt.step()
@@ -171,12 +185,12 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
         else:
             train_losses_list.append(train_loss.data)
             val_losses_list.append(val_loss.data)
-        scheduler.step(val_losses_list[i][0])
+        scheduler.step(val_losses_list[i].item())
         #optimizer.step()
         if i > 0:
-            if best_val_loss[0] ==0.0:
+            if best_val_loss.item() ==0.0:
                 break
-            if ((best_val_loss[0] -val_losses_list[i][0])/best_val_loss[0]) > tolerance:
+            if ((best_val_loss.item() -val_losses_list[i].item())/best_val_loss.item()) > tolerance:
                 val_loss_not_improved = 0
                 torch.save(net, model_out)
             else:
@@ -184,11 +198,13 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
         if verbose:
             if i%10 ==0:
                 print ('Epoch',i)
-                print ('Train loss',train_losses_list[i][0])
-                print ('Val loss', val_losses_list[i][0])
+                print ('Train loss',train_losses_list[i].item())
+                print ('Val loss', val_losses_list[i].item())
                 print('No improvement epochs ',val_loss_not_improved)
+                if best_val_loss:
+                    print('Best val loss yet ',best_val_loss.item())
                 sys.stdout.flush()
-        if  best_val_loss is None or val_losses_list[i][0] < best_val_loss[0]:
+        if  best_val_loss is None or val_losses_list[i].item() < best_val_loss.item():
             best_val_loss = val_losses_list[i]
         if val_loss_not_improved >= max_epochs_without_improv:
             print('Early stopping at epoch',i)
@@ -227,3 +243,6 @@ def reservoir_sample(iterable, n):
             if m < n:
                 reservoir[m] = item
     return reservoir  
+
+def load_pytorch_model(file_path):
+    return torch.load(file_path)
