@@ -28,7 +28,7 @@ class Rd_siamese_approximator(nn.Module):
     def __init__(self):
         super(Rd_siamese_approximator, self).__init__()
         self.linear = nn.Linear(2,10)
-        self.bilinear = nn.Bilinear(20,20,2)
+        self.bilinear = nn.Bilinear(20,20,1)
         self.linear1 = nn.Linear(10,20)
 
     def forward(self,input):
@@ -36,7 +36,9 @@ class Rd_siamese_approximator(nn.Module):
         inp2 = input[:,1,:]
         repr1 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp1))))
         repr2 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp2))))
-        comp = self.bilinear(repr1,repr2)
+        comp1 = self.bilinear(repr1,repr2)
+        comp2 = self.bilinear(repr1,repr2)
+        comp=torch.cat([comp1,comp2],dim=-1])
         return comp
 
 def compute_input_differences(input_pair_gen,domain):
