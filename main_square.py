@@ -9,7 +9,7 @@ from utils import sum_func
 from utils import get_filter_region_in_Rd
 from utils import create_sample_from_domain_with_filter_functions
 from utils import read_samples
-from approximator import SingleSampleFunctionApproximator
+from approximator import SingleSampleFunctionApproximator,SamplePairDifferenceFunctionApproximator
 from approximator import Rd_difference_approximator
 from utils import GPU
 from approximator import Rd_siamese_approximator
@@ -41,15 +41,15 @@ def approximate_function():
         differential_model = differential_model.cuda()
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file='square-single.model')
+    approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file='square-siamese-symmetric.model')#,domain=domain)
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 
 if __name__ =='__main__':
-    #approximate_function()
-    SAMPLE_SIZE=1000
-    sample_file ='square-5to10.csv'
-    R_2 ={'num_dims':2,'bounds':[(5,10),(5,10)]}
-    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    create_sample_from_domain_with_filter_functions(domain,[],sum_func,SAMPLE_SIZE,sample_file)
+    approximate_function()
+    #SAMPLE_SIZE=1000
+    #sample_file ='square-5to10.csv'
+    #R_2 ={'num_dims':2,'bounds':[(5,10),(5,10)]}
+    #domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    #create_sample_from_domain_with_filter_functions(domain,[],sum_func,SAMPLE_SIZE,sample_file)
