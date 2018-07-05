@@ -1,254 +1,74 @@
 Epoch 0
-Train loss 0.03062191605567932
-Val loss 0.001669449033215642
+Train loss 0.07174853980541229
+Val loss 0.008317646570503712
 No improvement epochs  0
 Epoch 10
-Train loss 0.00020338523609098047
-Val loss 3.845946048386395e-05
+Train loss 0.003901071846485138
+Val loss 0.003305282676592469
 No improvement epochs  0
-Best val loss yet  4.805150820175186e-05
+Best val loss yet  0.003698676824569702
 Epoch 20
-Train loss 0.00022249625180847943
-Val loss 6.129013490863144e-05
-No improvement epochs  4
-Best val loss yet  3.062285395571962e-05
-Epoch 30
-Train loss 0.00023327617964241654
-Val loss 0.00015724901459179819
-No improvement epochs  7
-Best val loss yet  2.2300078853731975e-05
-Epoch 40
-Train loss 5.177118146093562e-05
-Val loss 6.312387995421886e-05
-No improvement epochs  17
-Best val loss yet  2.2300078853731975e-05
-Epoch 50
-Train loss 0.00016982312081381679
-Val loss 1.7619828213355504e-05
-No improvement epochs  5
-Best val loss yet  1.1779846317949705e-05
-Epoch 60
-Train loss 0.00011303649807814509
-Val loss 6.261897942749783e-05
-No improvement epochs  15
-Best val loss yet  1.1779846317949705e-05
-Epoch 70
-Train loss 3.078953523072414e-05
-Val loss 4.605844515026547e-05
-No improvement epochs  7
-Best val loss yet  1.0472854228282813e-05
-Epoch 80
-Train loss 0.00012230145512148738
-Val loss 0.00010592104808893055
-No improvement epochs  4
-Best val loss yet  9.031036825035699e-06
-Epoch 90
-Train loss 8.761759090702981e-05
-Val loss 0.00020790642884094268
-No improvement epochs  1
-Best val loss yet  7.4427689469303004e-06
-Epoch 100
-Train loss 7.56999506847933e-05
-Val loss 6.827116885688156e-05
-No improvement epochs  11
-Best val loss yet  7.4427689469303004e-06
-Epoch 110
-Train loss 9.502068678557407e-06
-Val loss 1.0340312655898742e-05
-No improvement epochs  21
-Best val loss yet  7.4427689469303004e-06
-Epoch 120
-Train loss 8.784282545093447e-05
-Val loss 1.5263187378877774e-05
-No improvement epochs  31
-Best val loss yet  7.4427689469303004e-06
-Epoch 130
-Train loss 6.806421151850373e-05
-Val loss 1.3735718312091194e-05
-No improvement epochs  41
-Best val loss yet  7.4427689469303004e-06
-Epoch 140
-Train loss 3.697490683407523e-05
-Val loss 1.332108695351053e-05
-No improvement epochs  4
-Best val loss yet  7.01495537214214e-06
-Epoch 150
-Train loss 3.815211312030442e-05
-Val loss 6.166729144752026e-05
-No improvement epochs  14
-Best val loss yet  7.01495537214214e-06
-Epoch 160
-Train loss 6.571900303242728e-05
-Val loss 5.833634713781066e-05
-No improvement epochs  24
-Best val loss yet  7.01495537214214e-06
-Epoch 170
-Train loss 7.289992208825424e-05
-Val loss 8.160844117810484e-06
-No improvement epochs  3
-Best val loss yet  6.444140126404818e-06
-Epoch 180
-Train loss 6.191941793076694e-05
-Val loss 4.374441778054461e-05
-No improvement epochs  13
-Best val loss yet  6.444140126404818e-06
-Epoch 190
-Train loss 4.408961467561312e-05
-Val loss 2.6794965378940105e-05
-No improvement epochs  23
-Best val loss yet  6.444140126404818e-06
-Epoch 200
-Train loss 0.00010499300697119907
-Val loss 1.189310660265619e-05
-No improvement epochs  33
-Best val loss yet  6.444140126404818e-06
-Epoch 210
-Train loss 1.5404912119265646e-05
-Val loss 1.805236388463527e-05
-No improvement epochs  3
-Best val loss yet  4.39806944996235e-06
-Epoch 220
-Train loss 6.515192217193544e-05
-Val loss 3.1849318474996835e-05
-No improvement epochs  13
-Best val loss yet  4.39806944996235e-06
-Epoch 230
-Train loss 6.416341784643009e-05
-Val loss 4.830105899600312e-05
-No improvement epochs  23
-Best val loss yet  4.39806944996235e-06
-Epoch 240
-Train loss 5.332944419933483e-05
-Val loss 7.196528895292431e-05
-No improvement epochs  33
-Best val loss yet  4.39806944996235e-06
-Epoch 250
-Train loss 0.00425220699980855
-Val loss 6.961483450140804e-05
-No improvement epochs  43
-Best val loss yet  4.39806944996235e-06
-Epoch 260
-Train loss 2.4106564524117857e-05
-Val loss 1.0123997526534367e-05
-No improvement epochs  53
-Best val loss yet  4.39806944996235e-06
-Epoch 270
-Train loss 3.8691196095896885e-05
-Val loss 6.229391874512658e-05
-No improvement epochs  63
-Best val loss yet  4.39806944996235e-06
-Epoch 280
-Train loss 4.066762267029844e-05
-Val loss 5.879417949472554e-05
-No improvement epochs  73
-Best val loss yet  4.39806944996235e-06
-Epoch 290
-Train loss 5.804333704872988e-05
-Val loss 2.8189349450258305e-06
+Train loss 0.0044549922458827496
+Val loss 0.0032560445833951235
 No improvement epochs  0
-Best val loss yet  4.39806944996235e-06
-Epoch 300
-Train loss 4.248720142641105e-05
-Val loss 3.5122662666253746e-05
-No improvement epochs  10
-Best val loss yet  2.8189349450258305e-06
-Epoch 310
-Train loss 1.1848174835904501e-05
-Val loss 9.553663403494284e-06
-No improvement epochs  20
-Best val loss yet  2.8189349450258305e-06
-Epoch 320
-Train loss 1.7241656678379513e-05
-Val loss 2.1077228666399606e-05
-No improvement epochs  30
-Best val loss yet  2.8189349450258305e-06
-Epoch 330
-Train loss 2.6262710889568552e-05
-Val loss 2.777490226435475e-05
-No improvement epochs  40
-Best val loss yet  2.8189349450258305e-06
-Epoch 340
-Train loss 5.091506682219915e-05
-Val loss 8.702617196831852e-05
-No improvement epochs  50
-Best val loss yet  2.8189349450258305e-06
-Epoch 350
-Train loss 1.5455047105206177e-05
-Val loss 1.3816812497680075e-05
-No improvement epochs  60
-Best val loss yet  2.8189349450258305e-06
-Epoch 360
-Train loss 2.928074354713317e-05
-Val loss 3.4542619687272236e-05
-No improvement epochs  70
-Best val loss yet  2.8189349450258305e-06
-Epoch 370
-Train loss 3.611839565564878e-05
-Val loss 5.526077438844368e-05
-No improvement epochs  80
-Best val loss yet  2.8189349450258305e-06
-Epoch 380
-Train loss 1.1783779882534873e-05
-Val loss 1.0073627890960779e-05
-No improvement epochs  90
-Best val loss yet  2.8189349450258305e-06
-Epoch 390
-Train loss 1.936715307238046e-05
-Val loss 1.484584208810702e-05
-No improvement epochs  100
-Best val loss yet  2.8189349450258305e-06
-Epoch 400
-Train loss 2.5303894290118478e-05
-Val loss 4.786204590345733e-05
-No improvement epochs  110
-Best val loss yet  2.8189349450258305e-06
-Epoch 410
-Train loss 3.294023190392181e-05
-Val loss 8.226155478041619e-05
-No improvement epochs  120
-Best val loss yet  2.8189349450258305e-06
-Epoch 420
-Train loss 3.806059976341203e-05
-Val loss 0.0001179293030872941
-No improvement epochs  130
-Best val loss yet  2.8189349450258305e-06
-Epoch 430
-Train loss 2.647133806021884e-05
-Val loss 2.2887279556016438e-05
-No improvement epochs  2
-Best val loss yet  2.3608788524143165e-06
-Epoch 440
-Train loss 3.4636414056876674e-05
-Val loss 3.127651507384144e-05
-No improvement epochs  12
-Best val loss yet  2.3608788524143165e-06
-Epoch 450
-Train loss 5.31097157363547e-06
-Val loss 1.3874943761038594e-05
-No improvement epochs  22
-Best val loss yet  2.3608788524143165e-06
-Epoch 460
-Train loss 8.332105608133134e-06
-Val loss 1.8938111452371231e-06
-No improvement epochs  4
-Best val loss yet  1.6131594975377084e-06
-Epoch 470
-Train loss 5.072699423180893e-05
-Val loss 8.502984564984217e-05
-No improvement epochs  14
-Best val loss yet  1.6131594975377084e-06
-Epoch 480
-Train loss 3.972707054344937e-05
-Val loss 2.04704610951012e-05
-No improvement epochs  24
-Best val loss yet  1.6131594975377084e-06
-Epoch 490
-Train loss 2.5783163437154144e-05
-Val loss 1.6710020645405166e-05
-No improvement epochs  34
-Best val loss yet  1.6131594975377084e-06
-Epoch 500
-Train loss 9.910402695822995e-06
-Val loss 7.105915756255854e-06
-No improvement epochs  44
-Best val loss yet  1.6131594975377084e-06
+Best val loss yet  0.0032685177866369486
+Epoch 30
+Train loss 0.004265124909579754
+Val loss 0.0035130272153764963
+No improvement epochs  3
+Best val loss yet  0.0019759628921747208
+Epoch 40
+Train loss 0.004129868000745773
+Val loss 0.00362367182970047
+No improvement epochs  13
+Best val loss yet  0.0019759628921747208
+Epoch 50
+Train loss 0.0038373603019863367
+Val loss 0.0038996993098407984
+No improvement epochs  23
+Best val loss yet  0.0019759628921747208
+Epoch 60
+Train loss 0.0032918036449700594
+Val loss 0.00309929670765996
+No improvement epochs  33
+Best val loss yet  0.0019759628921747208
+Epoch 70
+Train loss 0.002315111458301544
+Val loss 0.0021388609893620014
+No improvement epochs  7
+Best val loss yet  0.0015562933403998613
+Epoch 80
+Train loss 0.0025095862802118063
+Val loss 0.0028519611805677414
+No improvement epochs  17
+Best val loss yet  0.0015562933403998613
+Epoch 90
+Train loss 0.0025541495997458696
+Val loss 0.002399907447397709
+No improvement epochs  27
+Best val loss yet  0.0015562933403998613
+Epoch 100
+Train loss 0.003081508679315448
+Val loss 0.002800627611577511
+No improvement epochs  37
+Best val loss yet  0.0015562933403998613
+Epoch 110
+Train loss 0.0027879548724740744
+Val loss 0.0024108996149152517
+No improvement epochs  47
+Best val loss yet  0.0015562933403998613
+Epoch 120
+Train loss 0.002155171474441886
+Val loss 0.002652689116075635
+No improvement epochs  7
+Best val loss yet  0.0014669481897726655
+Epoch 130
+Train loss 0.004673886112868786
+Val loss 0.001491011120378971
+No improvement epochs  5
+Best val loss yet  0.0012749165762215853
+Epoch 140
+Train loss 0.003092152765020728
+Val loss 0.0019903541542589664
+No improvement epochs  15
+Best val loss yet  0.0012749165762215853
