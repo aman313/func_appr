@@ -77,10 +77,10 @@ def learn_to_approximate_function_using_single(model_file='square-single.model')
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
-    if __name__ =='__main__':
+if __name__ =='__main__':   
 
     # learn_to_approximate_function_using_copairs("square-siamese.model")
-        learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric-scaled-params-count.model")
+    learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric-scaled-params-count.model")
     # learn_to_approximate_function_using_single("square-single.model")
     # for i in range(10):
     #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
