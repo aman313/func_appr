@@ -41,6 +41,23 @@ class Rd_siamese_approximator(nn.Module):
         comp=torch.cat([comp1,comp2],dim=-1])
         return comp
 
+class Rd_symmetric_siamese_approximator(nn.Module):
+    def __init__(self):
+        super(Rd_siamese_approximator, self).__init__()
+        self.linear = nn.Linear(2,10)
+        self.bilinear = nn.Bilinear(20,20,1)
+        self.linear1 = nn.Linear(10,20)
+
+    def forward(self,input):
+        inp1 = input[:,0,:]
+        inp2 = input[:,1,:]
+        repr1 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp1))))
+        repr2 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp2))))
+        comp1 = self.bilinear(repr1,repr2)
+        comp2= self.bilinear(repr2,repr1)
+        comp=torch.cat([comp1,comp2],dim=-1)
+        return comp
+
 def compute_input_differences(input_pair_gen,domain):
     input_diffs = []
     for x1,x2 in input_pair_gen:
@@ -74,7 +91,7 @@ def generate_pairs_batch(data,domain,batch_size=10,is_y=True):
             if len(batch_data) == 0:
                 break
             if is_y:
-                yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data] ),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
+                yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
             else:
                 yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]))
     return generate
@@ -137,11 +154,11 @@ class SamplePairDifferenceFunctionApproximator(RandomSamplePairFunctionApproxima
         For test samples - sample a fixed number of examples combine results
     '''
     def __init__(self,*args,**kwargs):
-        super().__init__(args,kwargs)
+        super().__init__(*args,**kwargs)
         
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
-        diff_train_data_gen = lambda : ((torch.stack(batch_x),torch.stack(batch_y)) for batch_x,batch_y in generate_differences_batches(self.diff_train_data, self.domain)())
-        diff_val_data_gen = lambda :((torch.stack(batch_x),torch.stack(batch_y)) for batch_x,batch_y in generate_differences_batches(val_gen, self.domain)())
+        diff_train_data_gen = lambda : ((torch.stack(batch_x),torch.stack(batch_y)) for batch_x,batch_y in generate_pairs_batch(self.diff_train_data, self.domain)())
+        diff_val_data_gen = lambda :((torch.stack(batch_x),torch.stack(batch_y)) for batch_x,batch_y in generate_pairs_batch(val_gen, self.domain)())
         train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file)
         print(np.mean(train_losses),np.mean(val_losses))
         #self.evaluate(val_gen)

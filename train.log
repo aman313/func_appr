@@ -1,0 +1,74 @@
+Epoch 0
+Train loss 0.07174853980541229
+Val loss 0.008317646570503712
+No improvement epochs  0
+Epoch 10
+Train loss 0.003901071846485138
+Val loss 0.003305282676592469
+No improvement epochs  0
+Best val loss yet  0.003698676824569702
+Epoch 20
+Train loss 0.0044549922458827496
+Val loss 0.0032560445833951235
+No improvement epochs  0
+Best val loss yet  0.0032685177866369486
+Epoch 30
+Train loss 0.004265124909579754
+Val loss 0.0035130272153764963
+No improvement epochs  3
+Best val loss yet  0.0019759628921747208
+Epoch 40
+Train loss 0.004129868000745773
+Val loss 0.00362367182970047
+No improvement epochs  13
+Best val loss yet  0.0019759628921747208
+Epoch 50
+Train loss 0.0038373603019863367
+Val loss 0.0038996993098407984
+No improvement epochs  23
+Best val loss yet  0.0019759628921747208
+Epoch 60
+Train loss 0.0032918036449700594
+Val loss 0.00309929670765996
+No improvement epochs  33
+Best val loss yet  0.0019759628921747208
+Epoch 70
+Train loss 0.002315111458301544
+Val loss 0.0021388609893620014
+No improvement epochs  7
+Best val loss yet  0.0015562933403998613
+Epoch 80
+Train loss 0.0025095862802118063
+Val loss 0.0028519611805677414
+No improvement epochs  17
+Best val loss yet  0.0015562933403998613
+Epoch 90
+Train loss 0.0025541495997458696
+Val loss 0.002399907447397709
+No improvement epochs  27
+Best val loss yet  0.0015562933403998613
+Epoch 100
+Train loss 0.003081508679315448
+Val loss 0.002800627611577511
+No improvement epochs  37
+Best val loss yet  0.0015562933403998613
+Epoch 110
+Train loss 0.0027879548724740744
+Val loss 0.0024108996149152517
+No improvement epochs  47
+Best val loss yet  0.0015562933403998613
+Epoch 120
+Train loss 0.002155171474441886
+Val loss 0.002652689116075635
+No improvement epochs  7
+Best val loss yet  0.0014669481897726655
+Epoch 130
+Train loss 0.004673886112868786
+Val loss 0.001491011120378971
+No improvement epochs  5
+Best val loss yet  0.0012749165762215853
+Epoch 140
+Train loss 0.003092152765020728
+Val loss 0.0019903541542589664
+No improvement epochs  15
+Best val loss yet  0.0012749165762215853
