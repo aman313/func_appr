@@ -38,7 +38,7 @@ class Rd_siamese_approximator(nn.Module):
         repr2 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp2))))
         comp1 = self.bilinear(repr1,repr2)
         comp2 = self.bilinear(repr1,repr2)
-        comp=torch.cat([comp1,comp2],dim=-1])
+        comp=torch.cat([comp1,comp2],dim=-1)
         return comp
 
 class Rd_symmetric_siamese_approximator(nn.Module):
