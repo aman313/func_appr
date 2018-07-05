@@ -10,7 +10,6 @@ from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
 from utils import load_pytorch_model
-from openpyxl.styles.builtins import output
 from spacy.tests.parser.test_nn_beam import batch_size
 
 class Rd_difference_approximator(nn.Module):
