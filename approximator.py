@@ -64,17 +64,17 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
 def generate_pairs_batch(data,domain,batch_size=10,is_y=True):
     def generate():
         perm_gen = permutations(data,2)
-        #while(True):
-        batch_data = []
-        for i in range(batch_size):
-            z1,z2 = next(perm_gen)
-            batch_data.append((z1,z2))
-        #if len(batch_data) == 0:
-        #    break
-        if is_y:
-            yield ([torch.FloatTensor([z[0][0],z[1][0]]) for z in batch_data] ,[torch.FloatTensor([z[0][1],z[1][1]]) for z in batch_data])
-        else:
-            yield ([torch.FloatTensor([z[0][0],z[1][0]]) for z in batch_data])
+        while(True):
+            batch_data = []
+            for i in range(batch_size):
+                z1,z2 = next(perm_gen)
+                batch_data.append((z1,z2))
+            if len(batch_data) == 0:
+                break
+            if is_y:
+                yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
+            else:
+                yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]))
     return generate
 
 def generate_batch(data,batch_size=50,is_y=True):

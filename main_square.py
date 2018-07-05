@@ -9,7 +9,7 @@ from utils import sum_func
 from utils import get_filter_region_in_Rd
 from utils import create_sample_from_domain_with_filter_functions
 from utils import read_samples
-from approximator import SingleSampleFunctionApproximator,SamplePairDifferenceFunctionApproximator
+from approximator import SingleSampleFunctionApproximator,SamplePairCoApproximator
 from approximator import Rd_difference_approximator
 from utils import GPU
 from approximator import Rd_siamese_approximator
@@ -36,12 +36,12 @@ def approximate_function():
     train_data = samples[:int(0.6*len(samples))]
     val_data = samples[int(0.6*len(samples)):int(0.8*len(samples))]
     test_data = samples[int(0.8*len(samples)):]
-    model = Rd_difference_approximator()
+    model = Rd_siamese_approximator()
     if GPU:
         differential_model = differential_model.cuda()
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file='square-siamese-symmetric.model')#,domain=domain)
+    approximator = SamplePairCoApproximator(train_data,differential_model=model,model_file='square-siamese-symmetric.model',domain=domain)
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
