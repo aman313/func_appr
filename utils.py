@@ -215,8 +215,9 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
             print('Early stopping at epoch',i)
             break
         gc.collect()
-    net = torch.load(model_out)
-    return (f,val_losses_list)
+    # net = torch.load(model_out)
+
+    return (train_losses_list,val_losses_list)
 
 
 '''
