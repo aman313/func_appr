@@ -141,7 +141,7 @@ class RandomSamplePairFunctionApproximator(FunctionApproximator):
         self.domain = domain
         self.diff_train_sample_size = diff_train_sample_size
         self.eval_sample_size = eval_sample_size
-        self.diff_train_data = random.sample(self.train_data,self.diff_train_sample_size)
+        self.diff_train_data = self.train_data
         self.differential_model = differential_model
         self.model_file = model_file
    
