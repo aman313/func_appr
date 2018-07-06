@@ -9,8 +9,7 @@ import torch
 from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
-from utils import load_pytorch_model
-
+from utils import load_pytorch_model,GPU
 class Rd_difference_approximator(nn.Module):
     def __init__(self):
         super(Rd_difference_approximator, self).__init__()
