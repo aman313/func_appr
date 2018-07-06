@@ -10,7 +10,6 @@ from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
 from utils import load_pytorch_model
-from openpyxl.styles.builtins import output
 from spacy.tests.parser.test_nn_beam import batch_size
 
 class Rd_difference_approximator(nn.Module):
@@ -41,10 +40,10 @@ class Rd_siamese_approximator(nn.Module):
 
 class Rd_symmetric_siamese_approximator(nn.Module):
     def __init__(self):
-        super(Rd_siamese_approximator, self).__init__()
-        self.linear = nn.Linear(2,10)
-        self.bilinear = nn.Bilinear(20,20,1)
-        self.linear1 = nn.Linear(10,20)
+        super(Rd_symmetric_siamese_approximator, self).__init__()
+        self.linear = nn.Linear(2,12)
+        self.bilinear = nn.Bilinear(24,24,1)
+        self.linear1 = nn.Linear(12,24)
 
     def forward(self,input):
         inp1 = input[:,0,:]
@@ -80,8 +79,10 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
 
 def generate_pairs_batch(data,domain,batch_size=10,is_y=True):
     def generate():
-        perm_gen = permutations(data,2)
-        while(True):
+        random.shuffle(data)
+        ldata=data[:50]
+        perm_gen = permutations(ldata,2)
+        while True:
             batch_data = []
             for i in range(batch_size):
                 z1,z2 = next(perm_gen)
@@ -139,7 +140,7 @@ class RandomSamplePairFunctionApproximator(FunctionApproximator):
         self.domain = domain
         self.diff_train_sample_size = diff_train_sample_size
         self.eval_sample_size = eval_sample_size
-        self.diff_train_data = random.sample(self.train_data,self.diff_train_sample_size)
+        self.diff_train_data = train_data#random.sample(self.train_data,self.diff_train_sample_size)
         self.differential_model = differential_model
         self.model_file = model_file
    
