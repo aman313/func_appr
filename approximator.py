@@ -191,7 +191,13 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         ref_y = [x[1] for x in reference_data]
         test_x = [x[0] for x in test_data]
         paired_with_reference = [x for x in product(test_x,ref_x)]
-        pair_outputs = self.differential_model(torch.FloatTensor(paired_with_reference))
+        
+        if GPU:
+            paired_with_reference=torch.cuda.FloatTensor(paired_with_reference)
+        else:
+            paired_with_reference=torch.FloatTensor(paired_with_reference)
+        
+        pair_outputs = self.differential_model()
         outputs = []
         for i in range(0,len(test_data)*len(ref_x),len(ref_x)):
             predictions = [x[0].detach().numpy() for x in pair_outputs[i:i+len(ref_x)]]
