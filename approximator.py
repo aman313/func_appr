@@ -10,7 +10,6 @@ from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
 from utils import load_pytorch_model
-from spacy.tests.parser.test_nn_beam import batch_size
 
 class Rd_difference_approximator(nn.Module):
     def __init__(self):
@@ -78,18 +77,20 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
     return generate
 
 def generate_pairs_batch(data,domain,batch_size=10,is_y=True):
-    def generate():
-        random.shuffle(data)
-        ldata=data[:50]
-        perm_gen = permutations(ldata,2)
-        while True:
+    
+    def generate():        
+        for _ in range(len(data)):
+            # print("Returning batch ",torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
             batch_data = []
             for i in range(batch_size):
-                z1,z2 = next(perm_gen)
+                # z1,z2 = next(perm_gen)
+                z1=random.choice(data)
+                z2=random.choice(data)
                 batch_data.append((z1,z2))
             if len(batch_data) == 0:
                 break
             if is_y:
+                # print("Yielding",len(batch_data))
                 yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
             else:
                 yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]))
@@ -178,7 +179,7 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         super().__init(*args,**kwargs)
 
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
-        diff_train_data_gen = generate_pairs_batch(self.diff_train_data, self.domain,32)
+        diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,32)
         diff_val_data_gen = generate_pairs_batch(reservoir_sample(val_gen,20), self.domain)
         train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file)
         print(np.mean(train_losses),np.mean(val_losses))

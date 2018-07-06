@@ -84,10 +84,10 @@ if __name__ =='__main__':
     print("Learnt square-siamese model")
     learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric-scaled-params-count.model")
     print("Learnt square siamese symmetric model")
-    learn_to_approximate_function_using_single("square-single.model")
-    print("Learnt square single model")
-    for i in range(10):
-        learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
+    # learn_to_approximate_function_using_single("square-single.model")
+    # print("Learnt square single model")
+    # for i in range(10):
+    #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
     for i in range(10):
         learn_to_approximate_function_using_copairs("square-siamese.model"+"_"+str(i))
     for i in range(10):

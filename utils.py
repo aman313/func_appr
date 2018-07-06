@@ -130,6 +130,7 @@ def run_epoch(net,train_data_gen,criterion,opt):
         train_loss += loss
         num_batches+=1
         opt.step()
+    
     return train_loss/num_batches
 
 def test(net,test_data_gen,criterion,verbose=False):
@@ -211,7 +212,7 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
             break
         gc.collect()
     net = torch.load(model_out)
-    return (train_losses_list,val_losses_list)
+    return (f,val_losses_list)
 
 
 '''
