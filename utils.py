@@ -7,7 +7,7 @@ from torch import optim
 import sys
 
 GPU = cuda.is_available()
-GPU=False
+#GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
     samples = []
     while len(samples)< sample_size:
