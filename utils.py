@@ -6,6 +6,7 @@ from torch import cuda
 from torch import optim
 import sys
 
+import time
 GPU = cuda.is_available()
 #GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
@@ -165,7 +166,8 @@ def test(net,test_data_gen,criterion,verbose=False):
         
         total_loss += (avg_loss)
     return total_loss/num_batches
-
+def timeSince(startTime):
+    return time.time()-startTime
 import gc
 def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.001,max_epochs_without_improv=20,verbose=False,model_out=''):
     val_loss_not_improved=0
@@ -174,6 +176,7 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
     val_losses_list = []
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, 
                                                          patience=int(0.9*max_epochs_without_improv), verbose=True, threshold=0.0001, threshold_mode='rel', cooldown=50, min_lr=0, eps=1e-08)
+    startTime=time.time()
     for i in range(num_epochs):
         #print('start epoch ',i)
         train_loss = run_epoch(net, train_data_gen, criterion, optimizer)
@@ -199,6 +202,8 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
         if verbose:
             if i%10 ==0:
                 print ('Epoch',i)
+                print('Time Per Epoch',"%.2f" % (timeSince(startTime)/(i+1)/60), " minutes")
+                print('Remaining Estimate',"%.2f" % (timeSince(startTime)*(num_epochs-i-1)/(i+1)/60), " minutes")
                 print ('Train loss',train_losses_list[i].item())
                 print ('Val loss', val_losses_list[i].item())
                 print('No improvement epochs ',val_loss_not_improved)
