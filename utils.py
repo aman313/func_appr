@@ -5,7 +5,6 @@ import torch
 from torch import cuda
 from torch import optim
 import sys
-
 import time
 GPU = cuda.is_available()
 #GPU=False
