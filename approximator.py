@@ -211,7 +211,7 @@ def plot_figure(inputs,predictions,outfile):
 if __name__=='__main__':
     siamese_model = load_pytorch_model('square-siamese.model')
     single_model = load_pytorch_model("square-single.model")
-    ood_samples = read_samples('square.csv')
+    ood_samples = read_samples('square-1to2.csv')
     samples = read_samples('square.csv')
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
