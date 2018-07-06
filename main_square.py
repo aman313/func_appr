@@ -73,25 +73,25 @@ def learn_to_approximate_function_using_single(model_file='square-single.model',
         model = model.cuda()
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    approximator = SingleSampleFunctionApproximator(train_data,differential_model=model,model_file=model_file,domain=domain)
+    approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file=model_file)
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 if __name__ =='__main__':   
     # generate_data()
-    # print("Generated Data")
+    #print("Generated Data")
     learn_to_approximate_function_using_copairs("square-siamese.model")
     print("Learnt square-siamese model")
     learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric-scaled-params-count.model")
     print("Learnt square siamese symmetric model")
     learn_to_approximate_function_using_single("square-single.model")
     print("Learnt square single model")
-    # for i in range(10):
-    #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
-    # for i in range(10):
-    #     learn_to_approximate_function_using_copairs("square-siamese.model"+"_"+str(i))
-    # for i in range(10):
-    #     learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric.model"+"_"+str(i))
+    for i in range(10):
+        learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
+    for i in range(10):
+        learn_to_approximate_function_using_copairs("square-siamese.model"+"_"+str(i))
+    for i in range(10):
+        learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric.model"+"_"+str(i))
     
     #SAMPLE_SIZE=1000
     #sample_file ='square-5to10.csv'

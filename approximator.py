@@ -27,7 +27,7 @@ class Rd_siamese_approximator(nn.Module):
     def __init__(self):
         super(Rd_siamese_approximator, self).__init__()
         self.linear = nn.Linear(2,10)
-        self.bilinear = nn.Bilinear(20,20,1)
+        self.bilinear = nn.Bilinear(20,20,2)
         self.linear1 = nn.Linear(10,20)
 
     def forward(self,input):
@@ -35,9 +35,7 @@ class Rd_siamese_approximator(nn.Module):
         inp2 = input[:,1,:]
         repr1 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp1))))
         repr2 = nn.Tanh()(self.linear1(nn.Tanh()(self.linear(inp2))))
-        comp1 = self.bilinear(repr1,repr2)
-        comp2 = self.bilinear(repr1,repr2)
-        comp=torch.cat([comp1,comp2],dim=-1)
+        comp = self.bilinear(repr1,repr2)
         return comp
 
 class Rd_symmetric_siamese_approximator(nn.Module):
@@ -81,8 +79,10 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
 
 def generate_pairs_batch(data,domain,batch_size=10,is_y=True):
     def generate():
-        perm_gen = permutations(data,2)
-        while(True):
+        random.shuffle(data)
+        ldata=data[:50]
+        perm_gen = permutations(ldata,2)
+        while True:
             batch_data = []
             for i in range(batch_size):
                 z1,z2 = next(perm_gen)
@@ -140,7 +140,7 @@ class RandomSamplePairFunctionApproximator(FunctionApproximator):
         self.domain = domain
         self.diff_train_sample_size = diff_train_sample_size
         self.eval_sample_size = eval_sample_size
-        self.diff_train_data = self.train_data#random.sample(self.train_data,self.diff_train_sample_size)
+        self.diff_train_data = train_data#random.sample(self.train_data,self.diff_train_sample_size)
         self.differential_model = differential_model
         self.model_file = model_file
    
