@@ -79,7 +79,7 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
 def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
     
     def generate():        
-        for _ in range(int(len(data)/batch_size)):
+        for _ in range(int(len(data)/batch_size)+1):
             # print("Returning batch ",torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]),torch.FloatTensor([[z[0][1],z[1][1]] for z in batch_data]))
             batch_data = []
             for i in range(batch_size):
