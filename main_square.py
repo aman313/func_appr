@@ -98,10 +98,10 @@ if __name__ =='__main__':
     print("Learnt square single model")
     # for i in range(10):
     #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
-    for i in range(10):
-        learn_to_approximate_function_using_copairs("square-siamese.model"+"_"+str(i))
-    for i in range(10):
-        learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric.model"+"_"+str(i))
+    # for i in range(10):
+    #     learn_to_approximate_function_using_copairs("square-siamese.model"+"_"+str(i))
+    # for i in range(10):
+    #     learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric.model"+"_"+str(i))
     
     #SAMPLE_SIZE=1000
     #sample_file ='square-5to10.csv'
