@@ -5,7 +5,7 @@
 '''
 
 from utils import Bounded_Rd
-from utils import sum_func
+from utils import sum_func,square_sum_func
 from utils import get_filter_region_in_Rd
 from utils import create_sample_from_domain_with_filter_functions
 from utils import read_samples
@@ -17,8 +17,8 @@ from approximator import Rd_siamese_approximator
 from torch import nn 
 from torch import optim
 import random
-sample_file ='square.csv'
-ood_sample_file='square-ood.csv'
+sample_file ='squared-square.csv'
+ood_sample_file='squared-square-ood.csv'
 NUM_EPOCHS=20000
 
 def generate_data():
@@ -30,6 +30,16 @@ def generate_data():
     create_sample_from_domain_with_filter_functions(domain,[get_filter_region_in_Rd(filter_domain)],sum_func,SAMPLE_SIZE,sample_file)
     OOD_SAMPLE_SIZE=2500
     create_sample_from_domain_with_filter_functions(filter_domain,[],sum_func,OOD_SAMPLE_SIZE,ood_sample_file)
+
+def generate_data2():
+    SAMPLE_SIZE=10000
+    R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
+    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    filter_r_2 = {'num_dims':2,'bounds':[(0,5),(0,5)]}
+    filter_domain = Bounded_Rd(filter_r_2['num_dims'],filter_r_2['bounds'])
+    create_sample_from_domain_with_filter_functions(domain,[get_filter_region_in_Rd(filter_domain)],square_sum_func,SAMPLE_SIZE,sample_file)
+    OOD_SAMPLE_SIZE=2500
+    create_sample_from_domain_with_filter_functions(filter_domain,[],square_sum_func,OOD_SAMPLE_SIZE,ood_sample_file)
 
 def learn_to_approximate_function_using_copairs(model_file='square-siamese.model',reload=False,reloadName=None):
     samples = read_samples(sample_file)
@@ -78,14 +88,14 @@ def learn_to_approximate_function_using_single(model_file='square-single.model',
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 if __name__ =='__main__':   
-    # generate_data()
-    #print("Generated Data")
-    # learn_to_approximate_function_using_copairs("square-siamese.model")
-    # print("Learnt square-siamese model")
-    learn_to_approximate_function_using_copairs_symmetric("square-siamese-symmetric-scaled-params-count.model")
+    generate_data2()
+    print("Generated Data")
+    learn_to_approximate_function_using_copairs("squared-square-siamese.model")
+    print("Learnt square-siamese model")
+    learn_to_approximate_function_using_copairs_symmetric("squared-square-siamese-symmetric-scaled-params-count.model")
     print("Learnt square siamese symmetric model")
-    # learn_to_approximate_function_using_single("square-single.model")
-    # print("Learnt square single model")
+    learn_to_approximate_function_using_single("squared-square-single.model")
+    print("Learnt square single model")
     # for i in range(10):
     #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))
     for i in range(10):

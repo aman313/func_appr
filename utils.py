@@ -7,7 +7,7 @@ from torch import optim
 import sys
 import time
 GPU = cuda.is_available()
-#GPU=False
+GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
     samples = []
     while len(samples)< sample_size:
@@ -78,6 +78,8 @@ class Bounded_Rd(R_d,BoundedDomain):
 def sum_func(x):
     return sum(x)
 
+def square_sum_func(x):
+    return sum(x)*sum(x)
 
 '''
     Classification functions
@@ -215,7 +217,7 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
             print('Early stopping at epoch',i)
             break
         gc.collect()
-    # net = torch.load(model_out)
+    net = torch.load(model_out)
 
     return (train_losses_list,val_losses_list)
 
@@ -250,5 +252,5 @@ def reservoir_sample(iterable, n):
                 reservoir[m] = item
     return reservoir  
 
-def load_pytorch_model(file_path):
-    return torch.load(file_path)
+def load_pytorch_model(*args,**kwargs):
+    return torch.load(*args,**kwargs)
