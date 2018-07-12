@@ -6,6 +6,7 @@ from torch import cuda
 from torch import optim
 import sys
 import time
+from math import sin
 GPU = cuda.is_available()
 GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
@@ -80,6 +81,9 @@ def sum_func(x):
 
 def square_sum_func(x):
     return sum(x)*sum(x)
+
+def sine_sum_func(x):
+    return sum([sin(y) for y in x])
 
 '''
     Classification functions
