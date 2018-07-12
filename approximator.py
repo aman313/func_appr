@@ -196,7 +196,7 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         else:
             paired_with_reference=torch.FloatTensor(paired_with_reference)
         
-        pair_outputs = self.differential_model()
+        pair_outputs = self.differential_model(paired_with_reference)
         outputs = []
         for i in range(0,len(test_data)*len(ref_x),len(ref_x)):
             predictions = [x[0].detach().numpy() for x in pair_outputs[i:i+len(ref_x)]]
@@ -216,8 +216,8 @@ def plot_figure(inputs,predictions,outfile):
 if __name__=='__main__':
     siamese_model = load_pytorch_model('squared-square-siamese.model')
     single_model = load_pytorch_model("squared-square-single.model")
-    ood_samples = read_samples('squared-square-1to2.csv')
-    samples = read_samples('squared-square.csv')
+    samples = read_samples('squared-square-1to2.csv')
+    ood_samples = read_samples('squared-square-ood.csv')
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)

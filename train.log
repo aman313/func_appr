@@ -1,24 +1,4 @@
-Epoch 0
-Train loss 0.10616277158260345
-Val loss 0.006277041044086218
-No improvement epochs  0
-Epoch 10
-Train loss 0.006559691391885281
-Val loss 0.001435774378478527
-No improvement epochs  3
-Best val loss yet  0.0011406163685023785
-Epoch 20
-Train loss 0.004973739385604858
-Val loss 0.001294110668823123
-No improvement epochs  13
-Best val loss yet  0.0011406163685023785
-Epoch 30
-Train loss 0.004412143025547266
-Val loss 0.001291197375394404
-No improvement epochs  23
-Best val loss yet  0.0011406163685023785
-Epoch 40
-Train loss 0.003953865729272366
-Val loss 0.0010968275601044297
-No improvement epochs  0
-Best val loss yet  0.0011087760794907808
+Generated Data
+Learnt square-siamese model
+Learnt square siamese symmetric model
+Learnt square single model

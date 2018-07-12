@@ -15,7 +15,7 @@ def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regressi
         forbidden = False
         for f in filter_funcs:
             if f(sample):
-                forbidden = False
+                forbidden = True
                 break
         if not forbidden:
             samples.append(sample)
