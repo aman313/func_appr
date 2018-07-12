@@ -214,10 +214,10 @@ def plot_figure(inputs,predictions,outfile):
     pass
 
 if __name__=='__main__':
-    siamese_model = load_pytorch_model('square-siamese.model')
-    single_model = load_pytorch_model("square-single.model")
-    ood_samples = read_samples('square-1to2.csv')
-    samples = read_samples('square.csv')
+    siamese_model = load_pytorch_model('squared-square-siamese.model')
+    single_model = load_pytorch_model("squared-square-single.model")
+    ood_samples = read_samples('squared-square-1to2.csv')
+    samples = read_samples('squared-square.csv')
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)
