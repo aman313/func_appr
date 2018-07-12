@@ -104,9 +104,9 @@ def region_to_class_function(region_to_class_map):
 def get_filter_region_in_Rd(region):
     def filter_func(x):
         if region.contains(x):
-            return False
-        else:
             return True
+        else:
+            return False
         
     return filter_func
 
