@@ -98,13 +98,13 @@ def learn_to_approximate_function_using_single(model_file='square-single.model',
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 if __name__ =='__main__':   
-    generate_data2()
-    print("Generated Data")
+    #generate_data2()
+    #print("Generated Data")
     #learn_to_approximate_function_using_copairs("sine-sum-siamese.model")
     #print("Learnt square-siamese model")
     #learn_to_approximate_function_using_copairs_symmetric("sine-sum-siamese-symmetric-scaled-params-count.model")
     #print("Learnt square siamese symmetric model")
-    #learn_to_approximate_function_using_single("sine-sum-single.model")
+    learn_to_approximate_function_using_single("sine-sum-single.model")
     #print("Learnt square single model")
     # for i in range(10):
     #     learn_to_approximate_function_using_single("square-single.model"+"_"+str(i))

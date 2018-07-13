@@ -123,7 +123,7 @@ class SingleSampleFunctionApproximator(FunctionApproximator):
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
         train_data_gen = lambda : ((batch_x,batch_y) for batch_x,batch_y in generate_batch(self.train_data)())
         val_data_gen = lambda :((batch_x,batch_y) for batch_x,batch_y in generate_batch(val_gen)())
-        train_losses,val_losses = train_with_early_stopping(self.model,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file)
+        train_losses,val_losses = train_with_early_stopping(self.model,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file,min_val=0.00001)
         print(np.mean(train_losses),np.mean(val_losses))
     
     def predict(self,test_data):
@@ -214,10 +214,10 @@ def plot_figure(inputs,predictions,outfile):
     pass
 
 if __name__=='__main__':
-    siamese_model = load_pytorch_model('squared-square-siamese.model')
-    single_model = load_pytorch_model("squared-square-single.model")
+    siamese_model = load_pytorch_model('sine-sum-siamese.model')
+    single_model = load_pytorch_model("sine-sum-single.model")
     samples = read_samples('squared-square-1to2.csv')
-    ood_samples = read_samples('squared-square-ood.csv')
+    ood_samples = read_samples('sine-sum-ood.csv')
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)

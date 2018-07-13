@@ -174,7 +174,7 @@ def test(net,test_data_gen,criterion,verbose=False):
 def timeSince(startTime):
     return time.time()-startTime
 import gc
-def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.001,max_epochs_without_improv=20,verbose=False,model_out=''):
+def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.001,max_epochs_without_improv=20,verbose=False,model_out='',min_val=-1):
     val_loss_not_improved=0
     best_val_loss = None
     train_losses_list = []
@@ -217,6 +217,9 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
                 sys.stdout.flush()
         if  best_val_loss is None or val_losses_list[i].item() < best_val_loss.item():
             best_val_loss = val_losses_list[i]
+            if min_val > 0 and best_val_loss <= min_val:
+                print('Early stopping at epoch as min val reached',i)
+                break                
         if val_loss_not_improved >= max_epochs_without_improv:
             print('Early stopping at epoch',i)
             break

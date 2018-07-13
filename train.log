@@ -1,1 +1,78 @@
-Generated Data
+Epoch 0
+Time Per Epoch 0.00  minutes
+Remaining Estimate 26.03  minutes
+Train loss 0.016356775537133217
+Val loss 0.00040193001041188836
+No improvement epochs  0
+Epoch 10
+Time Per Epoch 0.00  minutes
+Remaining Estimate 28.34  minutes
+Train loss 0.00015604654618073255
+Val loss 0.00013035901065450162
+No improvement epochs  6
+Best val loss yet  4.111845191800967e-05
+Epoch 20
+Time Per Epoch 0.00  minutes
+Remaining Estimate 27.99  minutes
+Train loss 0.00010297582775820047
+Val loss 0.00010391973046353087
+No improvement epochs  2
+Best val loss yet  3.094900966971181e-05
+Epoch 30
+Time Per Epoch 0.00  minutes
+Remaining Estimate 27.37  minutes
+Train loss 9.788399620447308e-05
+Val loss 2.0718298401334323e-05
+No improvement epochs  0
+Best val loss yet  3.094900966971181e-05
+Epoch 40
+Time Per Epoch 0.00  minutes
+Remaining Estimate 26.91  minutes
+Train loss 4.272696241969243e-05
+Val loss 3.95677998312749e-05
+No improvement epochs  10
+Best val loss yet  2.0718298401334323e-05
+Epoch 50
+Time Per Epoch 0.00  minutes
+Remaining Estimate 26.58  minutes
+Train loss 0.00010523564560571685
+Val loss 0.00010309000208508223
+No improvement epochs  20
+Best val loss yet  2.0718298401334323e-05
+Epoch 60
+Time Per Epoch 0.00  minutes
+Remaining Estimate 26.43  minutes
+Train loss 5.9414021961856633e-05
+Val loss 7.158969674492255e-05
+No improvement epochs  2
+Best val loss yet  1.7936701624421403e-05
+Epoch 70
+Time Per Epoch 0.00  minutes
+Remaining Estimate 26.29  minutes
+Train loss 6.075324927223846e-05
+Val loss 0.00014134850061964244
+No improvement epochs  12
+Best val loss yet  1.7936701624421403e-05
+Epoch 80
+Time Per Epoch 0.00  minutes
+Remaining Estimate 25.96  minutes
+Train loss 6.131493137218058e-05
+Val loss 3.585703962016851e-05
+No improvement epochs  22
+Best val loss yet  1.7936701624421403e-05
+Epoch 90
+Time Per Epoch 0.00  minutes
+Remaining Estimate 25.73  minutes
+Train loss 6.587302777916193e-05
+Val loss 2.2506510504172184e-05
+No improvement epochs  32
+Best val loss yet  1.7936701624421403e-05
+Epoch 100
+Time Per Epoch 0.00  minutes
+Remaining Estimate 25.49  minutes
+Train loss 6.371748895617202e-05
+Val loss 0.00010816704161697999
+No improvement epochs  42
+Best val loss yet  1.7936701624421403e-05
+Early stopping at epoch as min val reached 103
+0.0002577106 0.0001481041
