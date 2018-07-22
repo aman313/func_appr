@@ -7,8 +7,10 @@ from torch import optim
 import sys
 import time
 from math import sin
+from functools import reduce
+
 GPU = cuda.is_available()
-GPU=False
+#GPU=False
 def create_sample_from_domain_with_filter_functions(domain,filter_funcs,regression_func,sample_size,outfile):
     samples = []
     while len(samples)< sample_size:
@@ -36,7 +38,8 @@ class Domain():
         raise NotImplementedError
     
 class BoundedDomain(Domain):
-    pass
+    def size(self):
+        raise NotImplementedError
 
 class DiscreteDomain(Domain):
     pass
@@ -72,6 +75,24 @@ class Bounded_Rd(R_d,BoundedDomain):
         
     def add_samples(self,x1,x2):
         return [x1_i+x2_i for x1_i,x2_i in zip(x1,x2)]
+    
+    def size(self):
+        return reduce(lambda x,y:x*y,[x[1]-x[0] for x in self.bounds])
+    
+
+class BoundedContainerDomain(Domain):
+    def __init__(self,list_of_bounded_domains):
+        self._domains = list_of_bounded_domains
+        
+    def sample(self):
+        chosen_one = np.random.choice(self._domains,1,p=[float(i.size())/sum([x.size() for x in self._domains]) for i in self._domains])[0]
+        return chosen_one.sample()
+    
+    def contains(self, x):
+        for d in self._domains:
+            if d.contains(x):
+                return True
+        return False
         
 '''
     Regression functions
@@ -232,12 +253,17 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
 '''
     data read utils
 '''
-def read_samples(filename):
+def read_samples(filename,classes=None):
     data  = []
     with open(filename) as fl:
         reader = csv.reader(fl)
         for row in reader:
-            data.append(([float(x) for x in row[:-1]],float(row[-1])))
+            if not classes:
+                y = float(row[-1])
+            else:
+                y = [0]*len(classes)
+                y[classes.index(int(row[-1]))] = 1
+            data.append(([float(x) for x in row[:-1]],y))
     return data
 
 

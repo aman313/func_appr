@@ -10,6 +10,49 @@ from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
 from utils import load_pytorch_model,GPU
+
+class Rd_classifier(nn.Module):
+    def __init__(self):
+        super(Rd_classifier, self).__init__()
+        self.linear1 = nn.Linear(2,1024)
+        self.batch_norm1 = nn.BatchNorm1d(1024)
+        self.linear2 = nn.Linear(1024,1024)
+        self.batch_norm2 = nn.BatchNorm1d(1024)
+        self.linear3 = nn.Linear(1024,2)
+        
+    
+    def forward(self, input):
+        return self.linear3(nn.Dropout(0.2)(self.batch_norm2(nn.ReLU()(self.linear2(nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear1(input)))))))))
+
+class MultiBCEWithLogitsLoss(nn.Module):
+    def __init__(self):
+        super(MultiBCEWithLogitsLoss,self).__init__()
+    
+    def forward(self,pred,gold):
+        loss = 0
+        for i in range(pred.shape[1]):
+            gold_i = gold[:,i,:]
+            pred_i = pred[:,i,:]
+            loss+=nn.BCEWithLogitsLoss()(pred_i,gold_i)
+        return loss
+
+class Rd_siamese_classifier(nn.Module):
+    def __init__(self):
+        super(Rd_siamese_classifier, self).__init__()
+        self.linear = nn.Linear(2,1024)
+        self.batch_norm1 = nn.BatchNorm1d(1024)
+        self.bilinear = nn.Bilinear(1024,1024,2)
+    
+    def forward(self, input):
+        inp1 = input[:,0,:]
+        inp2 = input[:,1,:]
+        repr1 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp1))))
+        repr2 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp2))))
+        comp1 = self.bilinear(repr1,repr2)
+        comp2= self.bilinear(repr2,repr1)
+        comp=torch.stack([comp1,comp2],dim=-1)
+        return comp
+            
 class Rd_difference_approximator(nn.Module):
     def __init__(self):
         super(Rd_difference_approximator, self).__init__()
