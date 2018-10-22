@@ -10,6 +10,10 @@ from itertools import product
 from utils import reservoir_sample
 from cytoolz import comp
 from utils import load_pytorch_model,GPU
+from unicodedata import bidirectional
+from collections import Counter
+from torch.tensor import Tensor
+from torch.nn.modules.loss import BCEWithLogitsLoss
 
 class Rd_classifier(nn.Module):
     def __init__(self):
@@ -31,8 +35,8 @@ class MultiBCEWithLogitsLoss(nn.Module):
     def forward(self,pred,gold):
         loss = 0
         for i in range(pred.shape[1]):
-            gold_i = gold[:,i,:]
-            pred_i = pred[:,i,:]
+            gold_i = gold[:,i]
+            pred_i = pred[:,i]
             loss+=nn.BCEWithLogitsLoss()(pred_i,gold_i)
         return loss
 
@@ -42,17 +46,45 @@ class Rd_siamese_classifier(nn.Module):
         self.linear = nn.Linear(2,1024)
         self.batch_norm1 = nn.BatchNorm1d(1024)
         self.bilinear = nn.Bilinear(1024,1024,2)
+        self.bilinear1 = nn.Bilinear(1024,1024,2)
     
     def forward(self, input):
         inp1 = input[:,0,:]
         inp2 = input[:,1,:]
-        repr1 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp1))))
-        repr2 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp2))))
+        #repr1 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp1))))
+        #repr2 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp2))))
+        repr1 = nn.ReLU()(self.linear(inp1))
+        repr2 = nn.ReLU()(self.linear(inp2))
+
         comp1 = self.bilinear(repr1,repr2)
-        comp2= self.bilinear(repr2,repr1)
+        comp2= self.bilinear1(repr2,repr1)
         comp=torch.stack([comp1,comp2],dim=-1)
         return comp
-            
+
+class Rd_recurrent_classifier(nn.Module):
+    def __init__(self):
+        super(Rd_recurrent_classifier, self).__init__()
+        self.linear = nn.Linear(2,1024)
+        self.batch_norm1 = nn.BatchNorm1d(1024)
+        self.rec = nn.LSTM(1024,100,bidirectional=True)
+        self.linear1 = nn.Linear(100,2)
+    
+    def forward(self, input):
+        inp1 = input[:,0,:]
+        inp2 = input[:,1,:]
+        #repr1 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp1))))
+        #repr2 = nn.Dropout(0.2)(self.batch_norm1(nn.ReLU()(self.linear(inp2))))
+        repr1 = nn.ReLU()(self.linear(inp1))
+        repr2 = nn.ReLU()(self.linear(inp2))
+
+        output,hidden = self.rec(torch.stack([repr1,repr2]))
+        h,c = hidden
+        projected_hiddens =[]
+        for i in range(h.shape[0]):
+            projected_hiddens.append(self.linear1(h[i,:]))
+        comp=torch.stack(projected_hiddens,dim=-1)
+        return comp
+      
 class Rd_difference_approximator(nn.Module):
     def __init__(self):
         super(Rd_difference_approximator, self).__init__()
@@ -138,7 +170,7 @@ def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
                 yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]))
     return generate
 
-def generate_batch(data,batch_size=50,is_y=True):
+def generate_batch(data,batch_size=256,is_y=True):
     data = (x for x in data)
     def generate():
         while(True):
@@ -178,7 +210,7 @@ class SingleSampleFunctionApproximator(FunctionApproximator):
         print(criterion(predictions.squeeze(1),Variable(torch.FloatTensor([x[1] for x in test_data]))))    
     
 class RandomSamplePairFunctionApproximator(FunctionApproximator):
-    def __init__(self,train_data,domain,diff_train_sample_size=50,eval_sample_size=10,differential_model=None,model_file=''):
+    def __init__(self,train_data,domain,diff_train_sample_size=10,eval_sample_size=10,differential_model=None,model_file=''):
         self.train_data = train_data
         self.domain = domain
         self.diff_train_sample_size = diff_train_sample_size
@@ -215,6 +247,19 @@ class SamplePairDifferenceFunctionApproximator(RandomSamplePairFunctionApproxima
         
     def evaluate(self,test_data):
         pass
+
+def combine_predictions_average_axis(axis =None):
+    def combine_predictions_average(predictions,weights=None):
+        return np.average(predictions,weights=weights,axis=axis)
+    return combine_predictions_average
+
+def combine_predictions_vote(predictions,weights=None):
+    predictions_index = [x.tolist().index(1) for x in predictions]
+    max_vote_prediction = [0]*predictions[0].shape[0]
+    max_index = Counter(predictions_index).most_common(1)
+    max_vote_prediction[max_index] = 1
+    return Tensor(max_vote_prediction)
+    
     
 class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
     def __init__t(self,*args,**kwargs):
@@ -222,53 +267,69 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
 
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
         diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,256)
-        diff_val_data_gen = generate_pairs_batch(reservoir_sample(val_gen,20), self.domain)
+        diff_val_data_gen = generate_pairs_batch(reservoir_sample(val_gen,1000), self.domain)
         train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file)
         print(np.mean(train_losses),np.mean(val_losses))
         #self.evaluate(val_gen)
     
-    def predict(self,test_data):
+    def predict(self,test_data,combination_function=combine_predictions_average_axis()):
         reference_data = random.sample(self.train_data,self.eval_sample_size)
         ref_x = [x[0] for x in reference_data]
         ref_y = [x[1] for x in reference_data]
         test_x = [x[0] for x in test_data]
         paired_with_reference = [x for x in product(test_x,ref_x)]
         
-        if GPU:
-            paired_with_reference=torch.cuda.FloatTensor(paired_with_reference)
-        else:
-            paired_with_reference=torch.FloatTensor(paired_with_reference)
+        #if GPU:
+        #    paired_with_reference=torch.cuda.FloatTensor(paired_with_reference)
+        
+        #else:
+        paired_with_reference=torch.FloatTensor(paired_with_reference)
         
         pair_outputs = self.differential_model(paired_with_reference)
         outputs = []
         for i in range(0,len(test_data)*len(ref_x),len(ref_x)):
             predictions = [x[0].detach().numpy() for x in pair_outputs[i:i+len(ref_x)]]
             predictions_reference = [x[1].detach() for x in pair_outputs[i:i+len(ref_x)] ]
-            weights = [1-abs((x-y)/y) for x,y in zip(predictions_reference,ref_y) ] 
-            mean_prediction = np.average(predictions,weights=weights)
+            #weights = [1-abs((x-y)/y) for x,y in zip(predictions_reference,ref_y) ] 
+            mean_prediction = combination_function(predictions,weights=None)
             outputs.append(mean_prediction)
         return outputs
     
-    def evaluate(self,test_data,criterion):
-        predictions = self.predict(test_data)
-        print(criterion(Variable(torch.FloatTensor(predictions)),Variable(torch.FloatTensor([x[1] for x in test_data]))))
+    def evaluate(self,test_data,criterion,combination_function=combine_predictions_average_axis()):
+        predictions = self.predict(test_data,combination_function)
+        print(criterion(Variable(torch.FloatTensor(predictions).unsqueeze(1)),Variable(torch.FloatTensor([x[1] for x in test_data]).unsqueeze(1) )))
         
 def plot_figure(inputs,predictions,outfile):
     pass
 
 if __name__=='__main__':
-    siamese_model = load_pytorch_model('sine-sum-siamese.model')
-    single_model = load_pytorch_model("sine-sum-single.model")
-    samples = read_samples('squared-square-1to2.csv')
-    ood_samples = read_samples('sine-sum-ood.csv')
+    GPU=False
+    siamese_model = load_pytorch_model('square-copairs-class.model')
+    siamese_model = siamese_model.cpu()
+    single_model = load_pytorch_model("square-single-class.model")
+    single_model = single_model.cpu()
+    samples = read_samples('square-class.csv',classes=[0,1])
+    ood_samples = read_samples('square-class-ood.csv',classes=[0,1])
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)
     approximator_single = SingleSampleFunctionApproximator(samples,model=single_model)
-    criterion = nn.MSELoss()
-    approximator.evaluate(ood_samples, criterion)
-    approximator_single.evaluate(ood_samples, criterion)
-    siamese_predictions = approximator.predict(ood_samples)
-    single_predictions = approximator_single.predict(ood_samples)
-    plot_figure(ood_samples,siamese_predictions,'results-siamese.png')
-    plot_figure(ood_samples,single_predictions,'results-single.png')
+    #criterion = nn.MSELoss()
+    criterion_single = BCEWithLogitsLoss()
+    criterion = MultiBCEWithLogitsLoss()
+    combination_function = combine_predictions_average_axis(0)
+    approximator.evaluate(ood_samples, criterion,combination_function)
+    approximator_single.evaluate(ood_samples, criterion_single)
+    samples = samples[:2500]
+    siamese_predictions = approximator.predict(samples,combination_function)
+    single_predictions = approximator_single.predict(samples)
+    single_predictions = [x.tolist().index(max(x)) for x in single_predictions]
+    siamese_predictions = [x.tolist().index(max(x)) for x in siamese_predictions]
+    #plot_figure(ood_samples,siamese_predictions,'results-siamese.png')
+    #plot_figure(ood_samples,single_predictions,'results-single.png')
+    color_map ={0:'b',1:'g'}
+    domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
+    domain.visualize([x[0] for x in samples], [color_map[x] for x in single_predictions])
+    domain.visualize([x[0] for x in samples], [color_map[x] for x in siamese_predictions])
+
+

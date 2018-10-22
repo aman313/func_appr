@@ -11,7 +11,7 @@ from utils import create_sample_from_domain_with_filter_functions
 from utils import read_samples
 from approximator import SingleSampleFunctionApproximator,SamplePairCoApproximator,\
     Rd_symmetric_siamese_approximator, Rd_classifier, MultiBCEWithLogitsLoss,\
-    Rd_siamese_classifier
+    Rd_siamese_classifier, Rd_recurrent_classifier
 from approximator import Rd_difference_approximator
 from utils import GPU
 from approximator import Rd_siamese_approximator
@@ -130,15 +130,19 @@ def learn_to_classify_using_single(model_file='square-single-class.model',reload
 
 def learn_to_classify_using_copairs(model_file='square-copairs-class.model',reload=False,reloadName=False):
     samples = read_samples(sample_file,classes=[0,1])
+    
     random.shuffle(samples)
     train_data = samples[:int(0.6*len(samples))]
     val_data = samples[int(0.6*len(samples)):int(0.8*len(samples))]
     test_data = samples[int(0.8*len(samples)):]
-    model = Rd_siamese_classifier()
+    model = Rd_recurrent_classifier()
     if GPU:
         model = model.cuda()
     R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    color_map ={0:'b',1:'g'}
+    #domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
+    #exit()
     approximator = SamplePairCoApproximator(train_data,differential_model=model,model_file=model_file,domain=domain)
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = MultiBCEWithLogitsLoss()
@@ -148,7 +152,7 @@ if __name__ =='__main__':
     #generate_data3()
     #print("Generated Data")
     learn_to_classify_using_single()
-    learn_to_classify_using_copairs()
+    #learn_to_classify_using_copairs()
     #learn_to_approximate_function_using_copairs("sine-sum-siamese.model")
     #print("Learnt square-siamese model")
     #learn_to_approximate_function_using_copairs_symmetric("sine-sum-siamese-symmetric-scaled-params-count.model")

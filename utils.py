@@ -8,6 +8,7 @@ import sys
 import time
 from math import sin
 from functools import reduce
+import matplotlib.pyplot as plt
 
 GPU = cuda.is_available()
 #GPU=False
@@ -35,6 +36,9 @@ class Domain():
         raise NotImplementedError
     
     def sample(self):
+        raise NotImplementedError
+    
+    def visualize(self,data_points=None,colors=None):
         raise NotImplementedError
     
 class BoundedDomain(Domain):
@@ -78,7 +82,13 @@ class Bounded_Rd(R_d,BoundedDomain):
     
     def size(self):
         return reduce(lambda x,y:x*y,[x[1]-x[0] for x in self.bounds])
-    
+
+    def visualize(self, data_points=None, colors=None):
+        if self.d !=2:
+            raise NotImplementedError
+        #TODO:remove out of bound points
+        plt.scatter([x[0] for x in data_points],[x[1] for x in data_points],c=colors)
+        plt.show()
 
 class BoundedContainerDomain(Domain):
     def __init__(self,list_of_bounded_domains):
