@@ -9,6 +9,7 @@ import time
 from math import sin
 from functools import reduce
 import matplotlib.pyplot as plt
+import math
 
 GPU = cuda.is_available()
 #GPU=False
@@ -55,6 +56,38 @@ class R_d(ContinuousDomain):
     d = -1;
     def __init__(self,d):
         self.d = d 
+
+
+class BoundedRingDomain(ContinuousDomain,BoundedDomain):
+    
+    def __init__(self,inner_radius=0,outer_radius=1,lower_angle_bound=-math.pi,upper_angle_bound=math.pi):
+        if outer_radius <=0:
+            raise Exception('Ring outer radius must be positive')
+        self.outer_radius = outer_radius
+        self.inner_radius = inner_radius
+        self.lower_angle_bound = lower_angle_bound
+        self.upper_angle_bound = upper_angle_bound
+
+    def size(self):
+        gap_size = 0.5*(self.upper_angle_bound-self.lower_angle_bound)* self.inner_radius*self.inner_radius
+        return 0.5*(self.upper_angle_bound-self.lower_angle_bound)* self.outer_radius*self.outer_radius - gap_size
+    
+    def contains(self,x):
+        origin_distance = math.sqrt(math.pow(x[0],2)+math.pow(x[1],2))
+        if origin_distance <= self.outer_radius and (origin_distance >self.inner_radius or origin_distance==self.inner_radius==0) and np.arctan2(x[1],x[0])>=self.lower_angle_bound and np.arctan2(x[1],x[0]) <self.upper_angle_bound:
+            return True
+        else:
+            return False
+    
+    def sample(self):
+        origin_distance_sample = np.random.uniform(self.inner_radius,self.outer_radius)
+        theta_sample = np.random.uniform(self.lower_angle_bound,self.upper_angle_bound)
+        return [origin_distance_sample*math.cos(theta_sample),origin_distance_sample*math.sin(theta_sample)]
+    
+    def visualize(self,data_points=None,colors=None):
+        #TODO:remove out of bound points
+        plt.scatter([x[0] for x in data_points],[x[1] for x in data_points],c=colors)
+        plt.show()
 
 class Bounded_Rd(R_d,BoundedDomain):
     def __init__(self,d,bounds):

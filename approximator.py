@@ -1,7 +1,8 @@
 import torch.nn as nn
 from torch import cuda
 from itertools import permutations
-from utils import train_with_early_stopping, read_samples, Bounded_Rd
+from utils import train_with_early_stopping, read_samples, Bounded_Rd,\
+    BoundedRingDomain
 import numpy as np
 from torch.autograd import Variable
 import random
@@ -304,14 +305,15 @@ def plot_figure(inputs,predictions,outfile):
 
 if __name__=='__main__':
     GPU=False
-    siamese_model = load_pytorch_model('square-copairs-class.model')
+    siamese_model = load_pytorch_model('circle-copairs-class.model')
     siamese_model = siamese_model.cpu()
-    single_model = load_pytorch_model("square-single-class.model")
+    single_model = load_pytorch_model("circle-single-class.model")
     single_model = single_model.cpu()
-    samples = read_samples('square-class.csv',classes=[0,1])
-    ood_samples = read_samples('square-class-ood.csv',classes=[0,1])
-    R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
-    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    samples = read_samples('circle-class.csv',classes=[0,1])
+    ood_samples = read_samples('circle-class-ood.csv',classes=[0,1])
+    #R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
+    #domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    domain = BoundedRingDomain()
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)
     approximator_single = SingleSampleFunctionApproximator(samples,model=single_model)
     #criterion = nn.MSELoss()
@@ -321,15 +323,15 @@ if __name__=='__main__':
     approximator.evaluate(ood_samples, criterion,combination_function)
     approximator_single.evaluate(ood_samples, criterion_single)
     samples = samples[:2500]
-    siamese_predictions = approximator.predict(samples,combination_function)
-    single_predictions = approximator_single.predict(samples)
+    siamese_predictions = approximator.predict(ood_samples,combination_function)
+    single_predictions = approximator_single.predict(ood_samples)
     single_predictions = [x.tolist().index(max(x)) for x in single_predictions]
     siamese_predictions = [x.tolist().index(max(x)) for x in siamese_predictions]
     #plot_figure(ood_samples,siamese_predictions,'results-siamese.png')
     #plot_figure(ood_samples,single_predictions,'results-single.png')
     color_map ={0:'b',1:'g'}
-    domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
-    domain.visualize([x[0] for x in samples], [color_map[x] for x in single_predictions])
-    domain.visualize([x[0] for x in samples], [color_map[x] for x in siamese_predictions])
+    domain.visualize([x[0] for x in ood_samples], [color_map[x[1].index(1)] for x in ood_samples])
+    domain.visualize([x[0] for x in ood_samples], [color_map[x] for x in single_predictions])
+    domain.visualize([x[0] for x in ood_samples], [color_map[x] for x in siamese_predictions])
 
 

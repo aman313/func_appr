@@ -4,7 +4,8 @@
     test generalization for in an out sample validation sets 
 '''
 
-from utils import Bounded_Rd, BoundedContainerDomain, region_to_class_function
+from utils import Bounded_Rd, BoundedContainerDomain, region_to_class_function,\
+    BoundedRingDomain
 from utils import sum_func,square_sum_func,sine_sum_func
 from utils import get_filter_region_in_Rd
 from utils import create_sample_from_domain_with_filter_functions
@@ -18,8 +19,9 @@ from approximator import Rd_siamese_approximator
 from torch import nn 
 from torch import optim
 import random
-sample_file ='square-class.csv'
-ood_sample_file='square-class-ood.csv'
+import math
+sample_file ='circle-class.csv'
+ood_sample_file='circle-class-ood.csv'
 NUM_EPOCHS=20000
 
 def generate_data():
@@ -64,6 +66,21 @@ def generate_data3():
     create_sample_from_domain_with_filter_functions(domain,[get_filter_region_in_Rd(filter_domain)],region_to_class_function(region_to_class_map),SAMPLE_SIZE,sample_file)
     OOD_SAMPLE_SIZE=2500
     create_sample_from_domain_with_filter_functions(filter_domain,[],region_to_class_function(region_to_class_map),OOD_SAMPLE_SIZE,ood_sample_file)
+
+def generate_circle_data():
+    SAMPLE_SIZE = 10000
+    OOD_SAMPLE_SIZE=2500
+    circle_pos = [{'inner_radius':0,'outer_radius':0.25},{'inner_radius':0.75,'outer_radius':1}]
+    circle_neg = [{'inner_radius':0.25,'outer_radius':0.75}]
+    circle_pos_domain = [BoundedRingDomain(x['inner_radius'],x['outer_radius']) for x in circle_pos]
+    circle_neg_domain = [BoundedRingDomain(x['inner_radius'],x['outer_radius']) for x in circle_neg]
+    region_to_class_map = {x:1 for x in circle_pos_domain}
+    region_to_class_map.update({x:0 for x in circle_neg_domain})
+    domain = BoundedContainerDomain(circle_pos_domain+circle_neg_domain)
+    filter_domain = BoundedRingDomain(0,1,0,math.pi/2)
+    create_sample_from_domain_with_filter_functions(domain,[get_filter_region_in_Rd(filter_domain)],region_to_class_function(region_to_class_map),SAMPLE_SIZE,sample_file)
+    create_sample_from_domain_with_filter_functions(filter_domain,[],region_to_class_function(region_to_class_map),OOD_SAMPLE_SIZE,ood_sample_file)
+    
 
 def learn_to_approximate_function_using_copairs(model_file='square-siamese.model',reload=False,reloadName=None):
     samples = read_samples(sample_file)
@@ -112,7 +129,7 @@ def learn_to_approximate_function_using_single(model_file='square-single.model',
     criterion = nn.MSELoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
     
-def learn_to_classify_using_single(model_file='square-single-class.model',reload=False,reloadName=False):
+def learn_to_classify_using_single(model_file='circle-single-class.model',reload=False,reloadName=False):
     samples = read_samples(sample_file,classes=[0,1])
     random.shuffle(samples)
     train_data = samples[:int(0.6*len(samples))]
@@ -121,14 +138,12 @@ def learn_to_classify_using_single(model_file='square-single-class.model',reload
     model = Rd_classifier()
     if GPU:
         model = model.cuda()
-    R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
-    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
     approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file=model_file)
     optimizer = optim.Adam(model.parameters(), lr=1e-2)
     criterion = nn.BCEWithLogitsLoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 
-def learn_to_classify_using_copairs(model_file='square-copairs-class.model',reload=False,reloadName=False):
+def learn_to_classify_using_copairs(model_file='circle-copairs-class.model',reload=False,reloadName=False):
     samples = read_samples(sample_file,classes=[0,1])
     
     random.shuffle(samples)
@@ -138,8 +153,7 @@ def learn_to_classify_using_copairs(model_file='square-copairs-class.model',relo
     model = Rd_recurrent_classifier()
     if GPU:
         model = model.cuda()
-    R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
-    domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
+    domain = BoundedRingDomain()
     color_map ={0:'b',1:'g'}
     #domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
     #exit()
@@ -150,9 +164,14 @@ def learn_to_classify_using_copairs(model_file='square-copairs-class.model',relo
 
 if __name__ =='__main__':   
     #generate_data3()
+    #generate_circle_data()
     #print("Generated Data")
-    learn_to_classify_using_single()
-    #learn_to_classify_using_copairs()
+    #samples = read_samples(ood_sample_file,classes=[0,1])
+    #domain = BoundedRingDomain()
+    #color_map ={0:'b',1:'g'}
+    #domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
+    #learn_to_classify_using_single()
+    learn_to_classify_using_copairs()
     #learn_to_approximate_function_using_copairs("sine-sum-siamese.model")
     #print("Learnt square-siamese model")
     #learn_to_approximate_function_using_copairs_symmetric("sine-sum-siamese-symmetric-scaled-params-count.model")
