@@ -41,6 +41,10 @@ class MultiBCEWithLogitsLoss(nn.Module):
             loss+=nn.BCEWithLogitsLoss()(pred_i,gold_i)
         return loss
 
+
+class MultiCEWithLogitsLoss(nn.Module):
+    pass
+
 class Rd_siamese_classifier(nn.Module):
     def __init__(self):
         super(Rd_siamese_classifier, self).__init__()
