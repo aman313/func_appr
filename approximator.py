@@ -214,21 +214,23 @@ def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
 '''
 def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
     data_gen = (x for x in data)
-    def generate():        
-        batch_data = []
-        from copy import copy
-        data_gen = (x for x in data)
-        for i in range(batch_size):
-            # z1,z2 = next(perm_gen)
-            z1=next(data_gen)
-            z2=next(data_gen)
-            batch_data.append((z1,z2))
-            
-        if is_y:
-            # print("Yielding",len(batch_data))
-            yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]),torch.stack([torch.stack([z[0][1].squeeze(0),z[1][1].squeeze(0)]) for z in batch_data]))
-        else:
-            yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]))
+    def generate():  
+        while(True):      
+            batch_data = []
+            from copy import copy
+            data_gen = (x for x in data)
+            for i in range(batch_size):
+                # z1,z2 = next(perm_gen)
+                z1=next(data_gen)
+                z2=next(data_gen)
+                batch_data.append((z1,z2))
+            if len(batch_data)<batch_size:
+                break
+            if is_y:
+                # print("Yielding",len(batch_data))
+                yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]),torch.stack([torch.stack([z[0][1].squeeze(0),z[1][1].squeeze(0)]) for z in batch_data]))
+            else:
+                yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]))
     return generate
 
 
