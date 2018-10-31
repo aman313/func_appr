@@ -17,6 +17,7 @@ from torch.nn.modules.loss import BCEWithLogitsLoss
 
 class Generic_recurrent_classifier(nn.Module):
     def __init__(self, single_item_processor_network, processor_out_dim,recurrent_hidden_size, num_classes,is_combiner_bidirectional=True):
+        super(Generic_recurrent_classifier, self).__init__()
         self.single_item_processor_network = single_item_processor_network
         self.recurrent_hidden_size = recurrent_hidden_size
         self.num_classes = num_classes
@@ -37,9 +38,8 @@ class Generic_recurrent_classifier(nn.Module):
         projected_per_time_step = []
         for i in range(output.shape[0]):
             projected_per_time_step.append(self.output_layer(output[i,:]))
-        comp=torch.stack(projected_per_time_step)
+        comp=torch.stack(projected_per_time_step).permute(1,0,2)
         return comp
-
 
 class Rd_classifier(nn.Module):
     def __init__(self):
