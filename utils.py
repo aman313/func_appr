@@ -183,6 +183,8 @@ def run_epoch(net,train_data_gen,criterion,opt):
     net.train()
     train_loss = 0
     num_batches = 0
+    total =0
+    correct=0
     for (X,y) in train_data_gen():
         #print('generated batch')
         if GPU:
@@ -200,10 +202,14 @@ def run_epoch(net,train_data_gen,criterion,opt):
         train_loss += loss
         num_batches+=1
         opt.step()
-    
-    return train_loss/num_batches
+        _, predicted = output.squeeze(1).max(len(output.shape)-1)
+        total += y.size(0)
+        correct += predicted.eq(y).sum().item()
 
-def test(net,test_data_gen,criterion,verbose=False):
+    
+    return train_loss/num_batches,correct*1.0/total
+
+def test(net,test_data_gen,criterion,verbose=False,compute_acc=False):
     net.eval()
     total_loss = 0
     num_batches = 0
@@ -220,7 +226,8 @@ def test(net,test_data_gen,criterion,verbose=False):
         
     if verbose:
         generator = present_single(test_data_gen)
-        
+    total = 0
+    correct = 0
     for X,y in generator():
         if GPU:
             X,y = Variable(X.cuda()),Variable(y.cuda())
@@ -233,8 +240,12 @@ def test(net,test_data_gen,criterion,verbose=False):
             x_list = X.data.tolist()
             print ('x,y,o,l',x_list,y.data.tolist(),output.data.tolist(),avg_loss.data.tolist())
         
+        _, predicted = output.max(len(output.shape)-1)
+        total += y.size(0)
+        correct += predicted.eq(y).sum().item()
+
         total_loss += (avg_loss)
-    return total_loss/num_batches
+    return total_loss/num_batches,correct*1.0/total
 def timeSince(startTime):
     return time.time()-startTime
 import gc
@@ -248,8 +259,8 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
     startTime=time.time()
     for i in range(num_epochs):
         #print('start epoch ',i)
-        train_loss = run_epoch(net, train_data_gen, criterion, optimizer)
-        val_loss = test(net, val_data_gen, criterion, False)
+        train_loss,train_acc = run_epoch(net, train_data_gen, criterion, optimizer)
+        val_loss,val_acc = test(net, val_data_gen, criterion, False,compute_acc=True)
         if GPU:
             train_losses_list.append(train_loss.data.cpu())
             val_losses_list.append(val_loss.data.cpu())
@@ -274,7 +285,9 @@ def train_with_early_stopping(net,train_data_gen,val_data_gen,criterion,optimize
                 print('Time Per Epoch',"%.2f" % (timeSince(startTime)/(i+1)/60), " minutes")
                 print('Remaining Estimate',"%.2f" % (timeSince(startTime)*(num_epochs-i-1)/(i+1)/60), " minutes")
                 print ('Train loss',train_losses_list[i].item())
+                print('Train accuracy',train_acc)
                 print ('Val loss', val_losses_list[i].item())
+                print('Val accuracy',val_acc)
                 print('No improvement epochs ',val_loss_not_improved)
                 if best_val_loss:
                     print('Best val loss yet ',best_val_loss.item())

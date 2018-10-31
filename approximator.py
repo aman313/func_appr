@@ -66,6 +66,18 @@ class MultiBCEWithLogitsLoss(nn.Module):
             loss+=nn.BCEWithLogitsLoss()(pred_i,gold_i)
         return loss
 
+class MultiClassificationLoss(nn.Module):
+    def __init__(self,criterion):
+        super(MultiClassificationLoss,self).__init__()
+        self.criterion = criterion
+    
+    def forward(self,pred,gold):
+        loss = 0
+        for i in range(pred.shape[1]):
+            gold_i = gold[:,i]
+            pred_i = pred[:,i]
+            loss+=self.criterion(pred_i,gold_i)
+        return loss
 
 class MultiCEWithLogitsLoss(nn.Module):
     pass
@@ -179,7 +191,7 @@ def generate_differences_batches(data,domain,batch_size=10,is_y=True):
             else:
                 yield (torch.FloatTensor(x_diff) )
     return generate
-
+'''
 def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
     
     def generate():        
@@ -199,20 +211,41 @@ def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
             else:
                 yield (torch.FloatTensor([[z[0][0],z[1][0]] for z in batch_data]))
     return generate
+'''
+def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
+    data_gen = (x for x in data)
+    def generate():        
+        batch_data = []
+        from copy import copy
+        data_gen = (x for x in data)
+        for i in range(batch_size):
+            # z1,z2 = next(perm_gen)
+            z1=next(data_gen)
+            z2=next(data_gen)
+            batch_data.append((z1,z2))
+            
+        if is_y:
+            # print("Yielding",len(batch_data))
+            yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]),torch.stack([torch.stack([z[0][1].squeeze(0),z[1][1].squeeze(0)]) for z in batch_data]))
+        else:
+            yield (torch.stack([torch.stack([z[0][0].squeeze(0),z[1][0].squeeze(0)]) for z in batch_data]))
+    return generate
 
-def generate_batch(data,batch_size=256,is_y=True):
-    data = (x for x in data)
+
+
+def generate_batch(data,batch_size=128,is_y=True):
+    data_gen = (x for x in data)
     def generate():
         while(True):
             batch_data = []
             for i in range(batch_size):
-                batch_data.append(next(data))
-            if len(batch_data) == 0:
+                batch_data.append(next(data_gen))
+            if len(batch_data) < batch_size:
                 break
             if is_y:
-                yield (torch.FloatTensor([x[0] for x in batch_data]),torch.FloatTensor([x[1] for x in batch_data]))
+                yield (torch.stack([x[0].squeeze(0) for x in batch_data]),torch.stack([x[1].squeeze(0) for x in batch_data]))
             else:
-                yield (torch.FloatTensor([x[0] for x in batch_data]))
+                yield (torch.stack([x[0].squeeze(0) for x in batch_data]))
                 
     return generate
 
@@ -228,7 +261,10 @@ class SingleSampleFunctionApproximator(FunctionApproximator):
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
         train_data_gen = lambda : ((batch_x,batch_y) for batch_x,batch_y in generate_batch(self.train_data)())
         val_data_gen = lambda :((batch_x,batch_y) for batch_x,batch_y in generate_batch(val_gen)())
-        train_losses,val_losses = train_with_early_stopping(self.model,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file,min_val=0.00001)
+        #train_data_gen = generate_batch(self.train_data)
+        #val_data_gen = generate_batch(val_gen)
+
+        train_losses,val_losses = train_with_early_stopping(self.model,train_data_gen,val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=int(num_epochs*0.2),verbose=True,model_out=self.model_file,min_val=0.00001)
         print(np.mean(train_losses),np.mean(val_losses))
     
     def predict(self,test_data):
@@ -296,9 +332,9 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         super().__init(*args,**kwargs)
 
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
-        diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,256)
-        diff_val_data_gen = generate_pairs_batch(reservoir_sample(val_gen,1000), self.domain)
-        train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=2000,verbose=True,model_out=self.model_file)
+        diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,128)
+        diff_val_data_gen = generate_pairs_batch(val_gen, self.domain)
+        train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=int(0.2*num_epochs),verbose=True,model_out=self.model_file)
         print(np.mean(train_losses),np.mean(val_losses))
         #self.evaluate(val_gen)
     
