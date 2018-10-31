@@ -16,6 +16,32 @@ from collections import Counter
 from torch.tensor import Tensor
 from torch.nn.modules.loss import BCEWithLogitsLoss
 
+class Generic_recurrent_classifier(nn.Module):
+    def __init__(self, single_item_processor_network, processor_out_dim,recurrent_hidden_size, num_classes,is_combiner_bidirectional=True):
+        super(Generic_recurrent_classifier, self).__init__()
+        self.single_item_processor_network = single_item_processor_network
+        self.recurrent_hidden_size = recurrent_hidden_size
+        self.num_classes = num_classes
+        self.processor_out_dim = processor_out_dim
+        self.is_combiner_bidirectional = is_combiner_bidirectional
+        self.recurrent_combiner = nn.LSTM(processor_out_dim,recurrent_hidden_size,bidirectional=is_combiner_bidirectional)
+        if self.is_combiner_bidirectional:
+            recurrent_hidden_size = 2 * recurrent_hidden_size
+        self.output_layer = nn.Linear(recurrent_hidden_size,num_classes)
+        
+    def forward(self,inputs):
+        reprs = []
+        for i in range(inputs.shape[1]):
+            hidden_repr = nn.ReLU()(self.single_item_processor_network(inputs[:,i,:]))
+            reprs.append(hidden_repr)
+        
+        output,hidden = self.recurrent_combiner(torch.stack(reprs))
+        projected_per_time_step = []
+        for i in range(output.shape[0]):
+            projected_per_time_step.append(self.output_layer(output[i,:]))
+        comp=torch.stack(projected_per_time_step).permute(1,0,2)
+        return comp
+
 class Rd_classifier(nn.Module):
     def __init__(self):
         super(Rd_classifier, self).__init__()
