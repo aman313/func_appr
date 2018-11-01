@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/aman/Documents/func_appr/pytorch_cifar/models')
+sys.path.insert(0, '/home/arvindsgulati/func_appr/pytorch_cifar/models')
 
 from pytorch_cifar.models import PreActResNet18
 import torchvision
