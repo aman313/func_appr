@@ -13,7 +13,8 @@ from cytoolz import comp
 from utils import load_pytorch_model,GPU
 from collections import Counter
 from torch.tensor import Tensor
-from torch.nn.modules.loss import BCEWithLogitsLoss
+from torch.nn.modules.loss import BCEWithLogitsLoss, CrossEntropyLoss
+from utils import get_cifar_data
 
 class Generic_recurrent_classifier(nn.Module):
     def __init__(self, single_item_processor_network, processor_out_dim,recurrent_hidden_size, num_classes,is_combiner_bidirectional=True):
@@ -270,12 +271,18 @@ class SingleSampleFunctionApproximator(FunctionApproximator):
         print(np.mean(train_losses),np.mean(val_losses))
     
     def predict(self,test_data):
-        outputs = self.model(torch.FloatTensor([x[0] for x in test_data]))
+        outputs = self.model(torch.stack([x[0].squeeze(0) for x in test_data]))
         return outputs
 
-    def evaluate(self,test_data,criterion):
-        predictions = self.predict(test_data)
-        print(criterion(predictions.squeeze(1),Variable(torch.FloatTensor([x[1] for x in test_data]))))    
+    def evaluate(self,test_data,criterion,num_points=1000):
+        test_data_list = []
+        test_data = (x for x in test_data)
+        for i in range(num_points):
+            x = next(test_data)
+            test_data_list.append((x[0].squeeze(0),x[1].squeeze(0)))
+        predictions = self.predict(test_data_list,combination_function)
+        print(criterion(Variable(torch.stack(predictions).unsqueeze(1)),Variable(torch.stack([x[1] for x in test_data]).unsqueeze(1) )))
+        #print(criterion(predictions.squeeze(1),Variable(torch.FloatTensor([x[1] for x in test_data]))))    
     
 class RandomSamplePairFunctionApproximator(FunctionApproximator):
     def __init__(self,train_data,domain,diff_train_sample_size=10,eval_sample_size=10,differential_model=None,model_file=''):
@@ -343,17 +350,22 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         #self.evaluate(val_gen)
     
     def predict(self,test_data,combination_function=combine_predictions_average_axis()):
-        reference_data = random.sample(self.train_data,self.eval_sample_size)
-        ref_x = [x[0] for x in reference_data]
+        #reference_data = random.sample(self.train_data,self.eval_sample_size)
+        reference_data = []
+        train_data_gen = (x for x in self.train_data)
+        for i in range(self.eval_sample_size):
+            x = next(train_data_gen)
+            reference_data.append((x[0].squeeze(0),x[1].squeeze(0)))
+        ref_x = [x[0].squeeze(1) for x in reference_data]
         ref_y = [x[1] for x in reference_data]
-        test_x = [x[0] for x in test_data]
-        paired_with_reference = [x for x in product(test_x,ref_x)]
+        test_x = [x[0].squeeze(1) for x in test_data]
+        paired_with_reference = [torch.stack(x) for x in product(test_x,ref_x)]
         
         #if GPU:
         #    paired_with_reference=torch.cuda.FloatTensor(paired_with_reference)
         
         #else:
-        paired_with_reference=torch.FloatTensor(paired_with_reference)
+        paired_with_reference=torch.stack(paired_with_reference)
         
         pair_outputs = self.differential_model(paired_with_reference)
         outputs = []
@@ -365,9 +377,14 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
             outputs.append(mean_prediction)
         return outputs
     
-    def evaluate(self,test_data,criterion,combination_function=combine_predictions_average_axis()):
-        predictions = self.predict(test_data,combination_function)
-        print(criterion(Variable(torch.FloatTensor(predictions).unsqueeze(1)),Variable(torch.FloatTensor([x[1] for x in test_data]).unsqueeze(1) )))
+    def evaluate(self,test_data,criterion,combination_function=combine_predictions_average_axis(),num_points=100):
+        test_data_list = []
+        test_data = (x for x in test_data)
+        for i in range(num_points):
+            x = next(test_data)
+            test_data_list.append((x[0].squeeze(0),x[1].squeeze(0)))
+        predictions = self.predict(test_data_list,combination_function)
+        print(criterion(Variable(torch.stack(predictions).unsqueeze(1)),Variable(torch.stack([x[1] for x in test_data]).unsqueeze(1) )))
         
 def plot_figure(inputs,predictions,outfile):
     pass
@@ -378,19 +395,23 @@ if __name__=='__main__':
     siamese_model = siamese_model.cpu()
     single_model = load_pytorch_model("single-cifar.model")
     single_model = single_model.cpu()
-    samples = read_samples('circle-class.csv',classes=[0,1])
-    ood_samples = read_samples('circle-class-ood.csv',classes=[0,1])
+    train_data,val_data,test_data,classes = get_cifar_data()
+    samples = train_data
+    ood_samples = test_data
+    #samples = read_samples('circle-class.csv',classes=[0,1])
+    #ood_samples = read_samples('circle-class-ood.csv',classes=[0,1])
     #R_2 ={'num_dims':2,'bounds':[(-1,1),(-1,1)]}
     #domain = Bounded_Rd(R_2['num_dims'],R_2['bounds'])
-    domain = BoundedRingDomain()
+    domain = None
     approximator = SamplePairCoApproximator(samples,domain,differential_model=siamese_model)
     approximator_single = SingleSampleFunctionApproximator(samples,model=single_model)
     #criterion = nn.MSELoss()
-    criterion_single = BCEWithLogitsLoss()
-    criterion = MultiBCEWithLogitsLoss()
+    criterion_single = CrossEntropyLoss()
+    criterion = MultiClassificationLoss(CrossEntropyLoss())
     combination_function = combine_predictions_average_axis(0)
     approximator.evaluate(ood_samples, criterion,combination_function)
     approximator_single.evaluate(ood_samples, criterion_single)
+    '''
     samples = samples[:2500]
     siamese_predictions = approximator.predict(ood_samples,combination_function)
     single_predictions = approximator_single.predict(ood_samples)
@@ -402,5 +423,4 @@ if __name__=='__main__':
     domain.visualize([x[0] for x in ood_samples], [color_map[x[1].index(1)] for x in ood_samples])
     domain.visualize([x[0] for x in ood_samples], [color_map[x] for x in single_predictions])
     domain.visualize([x[0] for x in ood_samples], [color_map[x] for x in siamese_predictions])
-
-
+    '''
