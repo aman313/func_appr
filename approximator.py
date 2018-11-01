@@ -217,8 +217,8 @@ def generate_pairs_batch(data,domain,batch_size=128,is_y=True):
     def generate():  
         while(True):      
             batch_data = []
-            from copy import copy
-            data_gen = (x for x in data)
+            #from copy import copy
+            #data_gen = (x for x in data)
             for i in range(batch_size):
                 # z1,z2 = next(perm_gen)
                 z1=next(data_gen)
@@ -334,8 +334,10 @@ class SamplePairCoApproximator(RandomSamplePairFunctionApproximator):
         super().__init(*args,**kwargs)
 
     def approximate(self,val_gen,optimizer,criterion,num_epochs=100):
-        diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,128)
-        diff_val_data_gen = generate_pairs_batch(val_gen, self.domain)
+        diff_train_data_gen = lambda : ((batch_x,batch_y) for batch_x,batch_y in generate_pairs_batch(self.train_data,self.domain,128)())
+        diff_val_data_gen = lambda :((batch_x,batch_y) for batch_x,batch_y in generate_pairs_batch(val_gen,self.domain)())
+        #diff_train_data_gen = generate_pairs_batch(self.train_data, self.domain,128)
+        #diff_val_data_gen = generate_pairs_batch(val_gen, self.domain)
         train_losses,val_losses = train_with_early_stopping(self.differential_model,diff_train_data_gen,diff_val_data_gen,criterion,optimizer,num_epochs,tolerance=0.0001,max_epochs_without_improv=int(0.2*num_epochs),verbose=True,model_out=self.model_file)
         print(np.mean(train_losses),np.mean(val_losses))
         #self.evaluate(val_gen)
@@ -372,9 +374,9 @@ def plot_figure(inputs,predictions,outfile):
 
 if __name__=='__main__':
     GPU=False
-    siamese_model = load_pytorch_model('circle-copairs-class.model')
+    siamese_model = load_pytorch_model('copairs-cifar.model')
     siamese_model = siamese_model.cpu()
-    single_model = load_pytorch_model("circle-single-class.model")
+    single_model = load_pytorch_model("single-cifar.model")
     single_model = single_model.cpu()
     samples = read_samples('circle-class.csv',classes=[0,1])
     ood_samples = read_samples('circle-class-ood.csv',classes=[0,1])

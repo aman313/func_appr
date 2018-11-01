@@ -1,0 +1,131 @@
+==> Preparing data..
+Files already downloaded and verified
+Files already downloaded and verified
+Epoch 0
+Time Per Epoch 2.06  minutes
+Remaining Estimate 410.48  minutes
+Train loss 3.520679473876953
+Train accuracy 0.6293669871794871
+Val loss 3.3177833557128906
+Val accuracy 0.7265625
+No improvement epochs  0
+Epoch 10
+Time Per Epoch 2.11  minutes
+Remaining Estimate 398.31  minutes
+Train loss 0.8791088461875916
+Train accuracy 1.7016426282051282
+Val loss 1.042667269706726
+Val accuracy 1.6666666666666667
+No improvement epochs  0
+Best val loss yet  1.0899832248687744
+Epoch 20
+Time Per Epoch 2.10  minutes
+Remaining Estimate 376.59  minutes
+Train loss 0.6285263895988464
+Train accuracy 1.783974358974359
+Val loss 0.9626409411430359
+Val accuracy 1.6770833333333333
+No improvement epochs  4
+Best val loss yet  0.9580059051513672
+Epoch 30
+Time Per Epoch 2.10  minutes
+Remaining Estimate 355.27  minutes
+Train loss 0.5218256115913391
+Train accuracy 1.8221554487179488
+Val loss 0.9272432327270508
+Val accuracy 1.7265625
+No improvement epochs  4
+Best val loss yet  0.7997212409973145
+Epoch 40
+Time Per Epoch 2.10  minutes
+Remaining Estimate 333.41  minutes
+Train loss 0.48472774028778076
+Train accuracy 1.8334134615384616
+Val loss 0.9103190898895264
+Val accuracy 1.6901041666666667
+No improvement epochs  9
+Best val loss yet  0.789305567741394
+Epoch 50
+Time Per Epoch 2.10  minutes
+Remaining Estimate 312.33  minutes
+Train loss 0.45779165625572205
+Train accuracy 1.8413461538461537
+Val loss 1.0457534790039062
+Val accuracy 1.6692708333333333
+No improvement epochs  2
+Best val loss yet  0.7161073684692383
+Epoch 60
+Time Per Epoch 2.10  minutes
+Remaining Estimate 291.46  minutes
+Train loss 0.43377089500427246
+Train accuracy 1.8526041666666666
+Val loss 0.8824307322502136
+Val accuracy 1.7109375
+No improvement epochs  6
+Best val loss yet  0.6851899027824402
+Epoch 70
+Time Per Epoch 2.09  minutes
+Remaining Estimate 270.18  minutes
+Train loss 0.4285874366760254
+Train accuracy 1.8521634615384615
+Val loss 1.3187875747680664
+Val accuracy 1.5911458333333333
+No improvement epochs  16
+Best val loss yet  0.6851899027824402
+Epoch 80
+Time Per Epoch 2.09  minutes
+Remaining Estimate 249.16  minutes
+Train loss 0.43036922812461853
+Train accuracy 1.8517628205128205
+Val loss 0.7278167009353638
+Val accuracy 1.7630208333333333
+No improvement epochs  26
+Best val loss yet  0.6851899027824402
+Epoch 90
+Time Per Epoch 2.09  minutes
+Remaining Estimate 228.29  minutes
+Train loss 0.40010789036750793
+Train accuracy 1.864022435897436
+Val loss 1.0164016485214233
+Val accuracy 1.6770833333333333
+No improvement epochs  36
+Best val loss yet  0.6851899027824402
+Epoch    91: reducing learning rate of group 0 to 1.0000e-02.
+Epoch 100
+Time Per Epoch 2.10  minutes
+Remaining Estimate 207.52  minutes
+Train loss 0.04417034611105919
+Train accuracy 1.9850961538461538
+Val loss 0.6088535785675049
+Val accuracy 1.84375
+No improvement epochs  7
+Best val loss yet  0.41854286193847656
+Epoch 110
+Time Per Epoch 2.10  minutes
+Remaining Estimate 186.52  minutes
+Train loss 0.02126513235270977
+Train accuracy 1.9938701923076922
+Val loss 0.6417071223258972
+Val accuracy 1.8645833333333333
+No improvement epochs  17
+Best val loss yet  0.41854286193847656
+Epoch 120
+Time Per Epoch 2.08  minutes
+Remaining Estimate 164.65  minutes
+Train loss 0.01663903146982193
+Train accuracy 1.9954727564102563
+Val loss 0.6116516590118408
+Val accuracy 1.8645833333333333
+No improvement epochs  27
+Best val loss yet  0.41854286193847656
+Epoch 130
+Time Per Epoch 2.05  minutes
+Remaining Estimate 141.49  minutes
+Train loss 0.013827956281602383
+Train accuracy 1.9963541666666667
+Val loss 0.6649666428565979
+Val accuracy 1.8697916666666667
+No improvement epochs  37
+Best val loss yet  0.41854286193847656
+Early stopping at epoch 133
+0.44026536 0.90297496

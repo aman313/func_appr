@@ -84,7 +84,7 @@ def learn_to_classify_using_single(model_file='circle-single-cifar.model',reload
     if GPU:
         model = model.cuda()
     approximator = SingleSampleFunctionApproximator(train_data,model=model,model_file=model_file)
-    optimizer = optim.Adam(model.parameters(), lr=0.1)
+    optimizer = optim.SGD(model.parameters(), lr=0.1,momentum=0.9, weight_decay=5e-4)
     criterion = nn.CrossEntropyLoss()
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 
@@ -99,11 +99,12 @@ def learn_to_classify_using_copairs(model_file='circle-copairs-cifar.model',relo
     #domain.visualize([x[0] for x in samples], [color_map[x[1].index(1)] for x in samples])
     #exit()
     approximator = SamplePairCoApproximator(train_data,differential_model=model,model_file=model_file,domain=domain)
-    optimizer = optim.Adam(model.parameters(), lr=0.1)
+    #optimizer = optim.Adam(model.parameters(), lr=0.1)
+    optimizer = optim.SGD(model.parameters(), lr=0.1,momentum=0.9, weight_decay=5e-4)
     criterion = MultiClassificationLoss(nn.CrossEntropyLoss())
     approximator.approximate(val_data, optimizer, criterion, NUM_EPOCHS)
 
 if __name__=='__main__':
-    learn_to_classify_using_single()
-    #learn_to_classify_using_copairs()
+    #learn_to_classify_using_single()
+    learn_to_classify_using_copairs()
 
